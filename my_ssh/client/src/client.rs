@@ -1,4 +1,5 @@
 use core::panic;
+use std::io::Write;
 use std::{fs::File, io::BufReader, sync::Arc};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpStream;
@@ -65,7 +66,11 @@ impl Client {
             let n = tls_stream.read(&mut buf).await?;
 
             let raspuns = String::from_utf8_lossy(&buf[..n]);
-            println!("Răspuns server: {}", raspuns);
+            let r:Vec<&str> = raspuns.split("\r\n").collect();
+            println!("{}",r[0]);
+            print!("{}>",r[1]);
+            std::io::stdout().flush().unwrap();
+            
         }
         Ok(())
     }
@@ -79,3 +84,4 @@ impl Client {
         Ok(Certificate(certs[0].clone()))
     }
 }
+
