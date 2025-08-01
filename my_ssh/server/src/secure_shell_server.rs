@@ -5,17 +5,19 @@ use tokio_rustls::{
     TlsAcceptor,
     rustls::{Certificate, PrivateKey, ServerConfig},
 };
+use crate::command_system::command_handler::CommandHandler;
 
 pub struct SecureShellServer {
     certs: Vec<Certificate>,
     key: PrivateKey,
     ip_port: String,
     listener: Option<TcpListener>,
-    acceptor:Option<TlsAcceptor>
+    acceptor:Option<TlsAcceptor>,
+    root_path:std::path::PathBuf,
 }
 
 impl SecureShellServer {
-    pub fn new(cert_path: &str, key_path: &str, ip_port: &str) -> Self {
+    pub fn new(cert_path: &str, key_path: &str, ip_port: &str,root:&str) -> Self {
         let certs = SecureShellServer::load_certs(cert_path).unwrap_or_else(|e| panic!("Error: Certifcate {:?}", e));
         let key = SecureShellServer::load_private_key(key_path).unwrap_or_else(|e| panic!("Error: Key {:?}", e));
         SecureShellServer {
@@ -23,7 +25,8 @@ impl SecureShellServer {
             key: key,
             ip_port: ip_port.to_string(),
             listener: None,
-            acceptor:None
+            acceptor:None,
+            root_path:std::path::PathBuf::from(root),
         }
     }
     pub async fn bind_and_listen(&mut self) -> Result<(), Box<dyn std::error::Error>> {
@@ -48,6 +51,7 @@ impl SecureShellServer {
         loop {
             let (stream, addr) = listener.accept().await?;
             let acceptor = acceptor.clone();
+            let root_path = self.root_path.clone(); 
             tokio::spawn(async move {
                 let mut tls_stream = match acceptor.accept(stream).await {
                     Ok(s) => s,
@@ -57,7 +61,7 @@ impl SecureShellServer {
                     }
                 };
                 println!("Client TLS conectat: {}", addr);
-
+                let mut server_path= root_path.clone();
                 let mut buf = vec![0u8; 1024];
                 loop {
                     match tls_stream.read(&mut buf).await {
@@ -69,18 +73,27 @@ impl SecureShellServer {
                         Ok(n) => {
                             let received = String::from_utf8_lossy(&buf[..n]);
                             println!("Am primit: {}", received);
-
-                            let reply = format!("Am primit: {}", received);
+                            if received.trim()=="stop"{
+                                std::process::exit(1);
+                            }
+                            let mut command_handler= CommandHandler::new(received.to_string(),root_path.clone(),server_path.clone());
+                            let (reply, new_server_path) = command_handler.get_output();
+                            server_path = new_server_path;
+                            //dbg!(&reply);
                             if let Err(e) = tls_stream.write_all(reply.as_bytes()).await {
                                 eprintln!("Eroare la scriere: {:?}", e);
                             }
+                            
+                            
                         }
-                        Err(e) => eprintln!("Eroare la citire: {:?}", e),
+                        Err(e) =>{
+                            eprintln!("Eroare la citire: {:?}", e);
+                            break;
+                        } 
                     }
                 }
             });
         }
-        Ok(())
     }
     fn load_certs(path: &str) -> Result<Vec<Certificate>, Box<dyn std::error::Error>> {
         let certfile = File::open(path)?;
