@@ -55,6 +55,8 @@ impl Client {
         let tls_stream = self.tls_stream.as_mut().unwrap_or_else(|| {
             panic!("Error TLS not configured");
         });
+        print!(">");
+        std::io::stdout().flush().unwrap();
         loop {
             let mut mesaj = String::new();
             if mesaj.trim() == "exit" {
@@ -65,12 +67,11 @@ impl Client {
             let mut buf = vec![0u8; 1024];
             let n = tls_stream.read(&mut buf).await?;
 
-            let raspuns = String::from_utf8_lossy(&buf[..n]);
-            let r:Vec<&str> = raspuns.split("\r\n").collect();
-            println!("{}",r[0]);
-            print!("{}>",r[1]);
+            let answer = String::from_utf8_lossy(&buf[..n]);
+            let r: Vec<&str> = answer.split("\r\n").collect();
+            println!("{}", r[0]);
+            print!("{}>", r[1]);
             std::io::stdout().flush().unwrap();
-            
         }
         Ok(())
     }
@@ -84,4 +85,3 @@ impl Client {
         Ok(Certificate(certs[0].clone()))
     }
 }
-
