@@ -75,7 +75,7 @@ impl SecureShellServer {
                         }
                         Ok(n) => {
                             let received = String::from_utf8_lossy(&buf[..n]);
-                            println!("Am primit: {}", received);
+                            println!("Am primit: {}", received.trim());
                             if received.trim() == "stop" {
                                 std::process::exit(1);
                             }

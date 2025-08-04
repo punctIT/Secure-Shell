@@ -1,3 +1,5 @@
+use crate::response_handlers::response_formatter::ShowResponse;
+use colored::*;
 use core::panic;
 use std::io::Write;
 use std::{fs::File, io::BufReader, sync::Arc};
@@ -69,8 +71,9 @@ impl Client {
 
             let answer = String::from_utf8_lossy(&buf[..n]);
             let r: Vec<&str> = answer.split("\r\n").collect();
-            println!("{}", r[0]);
-            print!("{}>", r[1]);
+            let resonse = ShowResponse::new(r[0].to_string());
+            resonse.show();
+            print!("\n{}{}>", "Server".cyan(), r[1].cyan());
             std::io::stdout().flush().unwrap();
         }
         Ok(())

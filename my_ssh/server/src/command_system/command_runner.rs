@@ -1,4 +1,8 @@
-use crate::command_system::{commands::list_files::ListFiles, common::Command};
+use crate::command_system::common::Format;
+use crate::command_system::{
+    commands::list_files::ListFiles,
+    common::{Command, get_format},
+};
 use std::path::PathBuf;
 pub struct RunCommand {
     path: std::path::PathBuf,
@@ -43,11 +47,16 @@ impl RunCommand {
             }
             Commands::ListFiles => {
                 let list = ListFiles::new(self.path.clone(), self.command.clone());
-                output = list.get_output();
+                output = Some(list.get_output());
             }
             Commands::PrintWorkingDirectory => {}
             Commands::Unknown(cmd) => {
-                output = Some(format!("Error , Command {} not found", cmd).to_string());
+                output = Some(format!(
+                    "{}Error , Command {} not found {}",
+                    get_format(Format::ErrorFormat),
+                    cmd.to_string(),
+                    get_format(Format::SplitFormat)
+                ));
             }
         }
 
