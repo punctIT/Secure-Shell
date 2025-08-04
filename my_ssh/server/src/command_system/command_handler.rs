@@ -1,5 +1,6 @@
 use crate::command_system::command_runner::RunCommand;
 use crate::command_system::common::Command;
+use crate::command_system::operation_handler::OperationHandler;
 use std::path::PathBuf;
 
 pub struct CommandHandler {
@@ -16,13 +17,17 @@ impl CommandHandler {
         }
     }
     fn run_commands(&mut self) -> Option<String> {
-        let mut result: Option<String> = None;
+        let mut final_result: Option<String> = None;
         for cmd in &self.cmds {
             let mut runner = RunCommand::new(self.current_dir.clone(), cmd, None);
-
-            (self.current_dir, result) = runner.test();
+            let (current_dir, result) = runner.test();
+            self.current_dir = current_dir;
+            let operation = OperationHandler::new(result.unwrap_or("".to_string()), cmd);
+            let new_result =
+                final_result.unwrap_or("".to_string()) + operation.get_output().as_str();
+            final_result = Some(new_result);
         }
-        result
+        final_result
     }
     pub fn get_output(&mut self) -> (String, PathBuf) {
         let output = self.run_commands().unwrap_or_else(|| "".to_string());
@@ -34,7 +39,7 @@ impl CommandHandler {
                 std::path::Path::new("")
             }
         };
-        let reply = format!("{}\r\nServer:{}\r\n", output.trim(), current_dir.display());
+        let reply = format!("{}\r\n:{}\r\n", output.trim(), current_dir.display());
         return (reply, self.current_dir.clone());
     }
 
@@ -45,7 +50,6 @@ impl CommandHandler {
         let op = ["&&", "|", "||", "<", ">", ";"];
 
         let mut current_cmd: Vec<String> = Vec::new();
-
         while let Some(c) = iter_splited_input.next() {
             if op.contains(&c.as_ref()) {
                 cmds.push(Command {
