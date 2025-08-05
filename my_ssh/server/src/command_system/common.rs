@@ -19,17 +19,17 @@ pub fn get_files(path: &std::path::Path) -> Result<Vec<PathBuf>, std::io::Error>
 }
 
 pub enum Format {
-    ErrorFormat,
-    ListDirFormat,
-    ColorFormat(&'static str),
-    SplitFormat,
+    Error,
+    ListDir,
+    Color(&'static str),
+    Split,
 }
 pub fn get_format(format: Format) -> &'static str {
     match format {
-        Format::ErrorFormat => "?&E",
-        Format::ListDirFormat => "?&L",
-        Format::ColorFormat("CYAN") => "^!",
-        Format::SplitFormat => "\n\n",
+        Format::Error => "?&E",
+        Format::ListDir => "?&L",
+        Format::Color("CYAN") => "^!",
+        Format::Split => "\n\n",
         _ => "",
     }
 }

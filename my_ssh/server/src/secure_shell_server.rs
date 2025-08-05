@@ -23,8 +23,8 @@ impl SecureShellServer {
         let key = SecureShellServer::load_private_key(key_path)
             .unwrap_or_else(|e| panic!("Error: Key {:?}", e));
         SecureShellServer {
-            certs: certs,
-            key: key,
+            certs,
+            key,
             ip_port: ip_port.to_string(),
             listener: None,
             acceptor: None,
@@ -69,7 +69,7 @@ impl SecureShellServer {
                 let mut buf = vec![0u8; 1024];
                 loop {
                     match tls_stream.read(&mut buf).await {
-                        Ok(n) if n == 0 => {
+                        Ok(0) => {
                             println!("Clientul s-a deconectat");
                             break;
                         }

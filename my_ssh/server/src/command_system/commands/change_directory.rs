@@ -13,7 +13,8 @@ impl ChangeDIR {
             root,
         }
     }
-    pub fn get_new_path_or_output(&self) -> (std::path::PathBuf, String) {
+    pub fn get_new_path_or_output(&self) -> (std::path::PathBuf, String,bool) {
+        let mut succes=true;
         let mut output=String::from("");
         let mut new_path=self.current_dir.clone();
         if self.command.cmd.len()==1{
@@ -27,12 +28,13 @@ impl ChangeDIR {
         }
         else {
             output=format!("{}{}{}",
-                get_format(Format::ErrorFormat),
+                get_format(Format::Error),
                 "cd: too many arguments",
-                get_format(Format::SplitFormat),
-            )
+                get_format(Format::Split),
+            );
+            succes=false;
         }
-        (new_path,output)
+        (new_path,output,succes)
        
     }
 }

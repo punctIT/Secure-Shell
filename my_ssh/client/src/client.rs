@@ -47,7 +47,7 @@ impl Client {
             .await
             .unwrap_or_else(|e| panic!("Error , {e}"));
 
-        let server_name = ServerName::try_from(self.server_name.clone()).unwrap();
+        let server_name = self.server_name.clone();
 
         self.tls_stream = Some(connector.connect(server_name, stream).await?);
 
@@ -65,7 +65,7 @@ impl Client {
             if mesaj.trim() == "exit" {
                 break;
             }
-            tls_stream.write(mesaj.as_bytes()).await?;
+            tls_stream.write_all(mesaj.as_bytes()).await?;
             let mut buf = vec![0u8; 1024];
             let n = tls_stream.read(&mut buf).await?;
 

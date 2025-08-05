@@ -21,11 +21,11 @@ impl CommandHandler {
         for cmd in &self.cmds {
             //dbg!(&self.cmds);
             let mut runner = RunCommand::new(self.current_dir.clone(), self.root.clone(),cmd, None);
-            let (current_dir, result) = runner.test();
+            let (current_dir, result,succes) = runner.test();
             self.current_dir = current_dir;
             let operation = OperationHandler::new(result.unwrap_or("".to_string()), cmd);
-            let new_result =
-                final_result.unwrap_or("".to_string()) + operation.get_output().as_str();
+            let new_result =final_result.unwrap_or("".to_string()) + operation.get_output().as_str();
+            println!("{} ",succes);
             final_result = Some(new_result);
         }
         final_result
@@ -43,18 +43,18 @@ impl CommandHandler {
         };
         let reply = format!("{}\r\n:{}\r\n", output, current_dir.display());
         //dbg!(&reply);
-        return (reply, self.current_dir.clone());
+        (reply, self.current_dir.clone())
     }
 
     fn get_commands(client_input: String) -> Vec<Command> {
         let mut cmds: Vec<Command> = Vec::new();
         let splited_input: Vec<&str> = client_input.split_whitespace().collect();
-        let mut iter_splited_input = splited_input.iter();
+        let iter_splited_input = splited_input.iter();
         let op = ["&&", "|", "||", "<", ">", ";"];
 
         let mut current_cmd: Vec<String> = Vec::new();
-        while let Some(c) = iter_splited_input.next() {
-            if op.contains(&c.as_ref()) {
+        for c in iter_splited_input {
+            if op.contains(c) {
                 cmds.push(Command {
                     cmd: current_cmd.clone(),
                     op: Some(c.to_string()),

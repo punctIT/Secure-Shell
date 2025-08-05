@@ -13,7 +13,7 @@ fn get_color(color: &str) -> colored::Color {
 
 impl ShowResponse {
     pub fn new(response: String) -> Self {
-        ShowResponse { response: response }
+        ShowResponse { response}
     }
     fn show_list_style(&self, word: Vec<&str>) {
         fn print_space(len: usize) {
@@ -38,11 +38,11 @@ impl ShowResponse {
             count += 1;
             if count % 3 == 0 {
                 count = 0;
-                println!("")
+                println!()
             }
             std::io::stdout().flush().unwrap();
         }
-        println!("")
+        println!()
     }
     fn split_response(&self) {
         let props: Vec<&str> = self

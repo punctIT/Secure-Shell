@@ -14,7 +14,7 @@ impl ListFiles {
             command: cmd,
         }
     }
-    fn get_files_current_dir(&self) -> String {
+    fn get_files_current_dir(&self) -> (String,bool){
         let mut output: String = String::new();
         let files = get_files(&self.current_dir).unwrap();
         for file in files {
@@ -24,27 +24,28 @@ impl ListFiles {
                 .to_str()
                 .unwrap_or("default");
             if file.is_file() {
-                output += format!("{}{}", f, get_format(Format::SplitFormat)).as_str();
+                output += format!("{}{}", f, get_format(Format::Split)).as_str();
             } else {
                 output += format!(
                     "{}{}{}",
-                    get_format(Format::ColorFormat("CYAN")),
+                    get_format(Format::Color("CYAN")),
                     f,
-                    get_format(Format::SplitFormat)
+                    get_format(Format::Split)
                 )
                 .as_str();
             }
         }
         output = format!(
             "{}{}{}",
-            get_format(Format::ListDirFormat),
-            get_format(Format::SplitFormat),
+            get_format(Format::ListDir),
+            get_format(Format::Split),
             output
         );
-        output
+        (output,true)
     }
-    fn get_files_in_dir_name(&self) -> String {
+    fn get_files_in_dir_name(&self) -> (String,bool) {
         let mut output: String = String::new();
+        let mut succes=false;
         let paths: Vec<PathBuf> = self.command.cmd[1..]
             .iter()
             .map(|f| self.current_dir.join(f))
@@ -54,12 +55,11 @@ impl ListFiles {
             if !path.exists() || path.is_file() {
                 output += format!(
                     "{}ls: cannot access '{}': No such file or directory\n{}",
-                    get_format(Format::ErrorFormat),
+                    get_format(Format::Error),
                     path.strip_prefix(&self.current_dir)
-                        .unwrap_or(&path)
-                        .to_string_lossy()
-                        .to_string(),
-                    get_format(Format::SplitFormat)
+                        .unwrap_or(path)
+                        .to_string_lossy(),
+                    get_format(Format::Split)
                 )
                 .as_str();
             }
@@ -75,34 +75,35 @@ impl ListFiles {
                         .to_str()
                         .unwrap_or("default");
                     if file.is_file() {
-                        out += format!("{}{}", f, get_format(Format::SplitFormat)).as_str();
+                        out += format!("{}{}", f, get_format(Format::Split)).as_str();
                     } else {
                         out += format!(
                             "{}{}{}",
-                            get_format(Format::ColorFormat("CYAN")),
+                            get_format(Format::Color("CYAN")),
                             f,
-                            get_format(Format::SplitFormat)
+                            get_format(Format::Split)
                         )
                         .as_str();
                     }
+                    succes=true;
                 }
                 output = format!(
                     "{}{}{}{}",
                     output,
-                    get_format(Format::ListDirFormat),
-                    get_format(Format::SplitFormat),
+                    get_format(Format::ListDir),
+                    get_format(Format::Split),
                     out
                 );
             }
         }
-        output
+        (output,succes)
     }
-    pub fn get_output(&self) -> String {
+    pub fn get_output(&self) -> (String,bool) {
         if self.command.cmd.len() == 1 {
-            return self.get_files_current_dir();
+            self.get_files_current_dir()
         } else {
             //dbg!(&self.command.cmd);
-            return self.get_files_in_dir_name();
+            self.get_files_in_dir_name()
         }
     }
 }

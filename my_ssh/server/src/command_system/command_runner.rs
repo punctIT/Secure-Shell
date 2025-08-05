@@ -38,34 +38,39 @@ impl RunCommand {
             input,
         }
     }
-    pub fn test(&mut self) -> (PathBuf, Option<String>) {
+    pub fn test(&mut self) -> (PathBuf, Option<String>,bool) {
         let mut output: Option<String> = None;
         let command = Commands::from_str(&self.command.cmd[0]);
         let _ = self.input;
+        let mut succes=true;
         match command {
             Commands::ChangeDirectory => {
                 let cd= ChangeDIR::new(self.command.clone(), self.path.clone(), self.root.clone());
-                let (path,new_output)=cd.get_new_path_or_output();
+                let (path,new_output,new_succes)=cd.get_new_path_or_output();
                 self.path=path;
+                succes=new_succes;
                 output=Some(new_output);
             }
             Commands::ListFiles => {
                 let list = ListFiles::new(self.path.clone(), self.command.clone());
-                output = Some(list.get_output());
+                let (new_output,new_succes)=list.get_output();
+                output=Some(new_output);
+                succes=new_succes;
             }
             Commands::PrintWorkingDirectory => {
                 
             }
             Commands::Unknown(cmd) => {
+                succes=false;
                 output = Some(format!(
                     "{}Error , Command {} not found {}",
-                    get_format(Format::ErrorFormat),
-                    cmd.to_string(),
-                    get_format(Format::SplitFormat)
+                    get_format(Format::Error),
+                    cmd,
+                    get_format(Format::Split)
                 ));
             }
         }
 
-        return (self.path.clone(), output);
+        (self.path.clone(), output,succes)
     }
 }
