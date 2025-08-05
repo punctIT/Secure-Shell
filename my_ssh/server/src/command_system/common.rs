@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Command {
     pub cmd: Vec<String>,
     pub op: Option<String>,

@@ -26,9 +26,9 @@ impl Client {
             panic!("Error , invalid server name: {:?}", e);
         });
         Client {
-            cert: cert,
+            cert,
             ip_port: ip_port.to_string(),
-            server_name: server_name,
+            server_name,
             tls_stream: None,
         }
     }
@@ -61,10 +61,10 @@ impl Client {
         std::io::stdout().flush().unwrap();
         loop {
             let mut mesaj = String::new();
+            std::io::stdin().read_line(&mut mesaj).expect("Read Error");
             if mesaj.trim() == "exit" {
                 break;
             }
-            std::io::stdin().read_line(&mut mesaj).expect("Read Error");
             tls_stream.write(mesaj.as_bytes()).await?;
             let mut buf = vec![0u8; 1024];
             let n = tls_stream.read(&mut buf).await?;
@@ -73,7 +73,7 @@ impl Client {
             let r: Vec<&str> = answer.split("\r\n").collect();
             let resonse = ShowResponse::new(r[0].to_string());
             resonse.show();
-            print!("\n{}{}>", "Server".cyan(), r[1].cyan());
+            print!("{}{}>", "Server".cyan(), r[1].cyan());
             std::io::stdout().flush().unwrap();
         }
         Ok(())

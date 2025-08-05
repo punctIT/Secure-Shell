@@ -19,7 +19,8 @@ impl CommandHandler {
     fn run_commands(&mut self) -> Option<String> {
         let mut final_result: Option<String> = None;
         for cmd in &self.cmds {
-            let mut runner = RunCommand::new(self.current_dir.clone(), cmd, None);
+            //dbg!(&self.cmds);
+            let mut runner = RunCommand::new(self.current_dir.clone(), self.root.clone(),cmd, None);
             let (current_dir, result) = runner.test();
             self.current_dir = current_dir;
             let operation = OperationHandler::new(result.unwrap_or("".to_string()), cmd);
@@ -30,7 +31,8 @@ impl CommandHandler {
         final_result
     }
     pub fn get_output(&mut self) -> (String, PathBuf) {
-        let output = self.run_commands().unwrap_or_else(|| "".to_string());
+        //dbg!(&self.cmds);
+        let output = self.run_commands().unwrap_or("12".to_string());
 
         let current_dir = match self.current_dir.strip_prefix(&self.root) {
             Ok(path) => path,
@@ -39,7 +41,8 @@ impl CommandHandler {
                 std::path::Path::new("")
             }
         };
-        let reply = format!("{}\r\n:{}\r\n", output.trim(), current_dir.display());
+        let reply = format!("{}\r\n:{}\r\n", output, current_dir.display());
+        //dbg!(&reply);
         return (reply, self.current_dir.clone());
     }
 

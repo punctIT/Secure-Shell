@@ -7,7 +7,6 @@ enum Operation {
     AndLogic,
     OrLogic,
     CommandSeparator,
-    Unknown(String),
 }
 
 impl Operation {
@@ -19,7 +18,7 @@ impl Operation {
             "&&" => Operation::AndLogic,
             "||" => Operation::OrLogic,
             ";" | "" => Operation::CommandSeparator,
-            other => Operation::Unknown(other.to_string()),
+            _ => Operation::CommandSeparator,
         }
     }
 }
