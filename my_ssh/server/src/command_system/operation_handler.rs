@@ -1,3 +1,5 @@
+use std::io::Write;
+
 use crate::command_system::common::Command;
 
 enum Operation {
@@ -25,24 +27,76 @@ impl Operation {
 
 pub struct OperationHandler {
     output: String,
-    command: Command,
+    last_output:String,
+    commands: Vec<Command>,
+    current_dir: std::path::PathBuf,
+    last_succes: bool,
 }
 impl OperationHandler {
-    pub fn new(output: String, command: &Command) -> Self {
+    pub fn new(
+        output: String,
+        last_output:String,
+        command: &Vec<Command>,
+        path: std::path::PathBuf,
+        last_succes: bool,
+    ) -> Self {
         OperationHandler {
             output,
-            command: command.clone(),
+            last_output,
+            commands: command.clone(),
+            current_dir: path,
+            last_succes,
         }
     }
-    pub fn get_output(&self) -> String {
-        let op_str = match &self.command.op {
+    fn write_in_file(
+        &self,
+        content: &String,
+        name: &String,
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        let file_path = self.current_dir.join(name);
+        if !file_path.parent().unwrap().exists() {
+            std::fs::create_dir_all(file_path.parent().unwrap())?;
+        }
+        let mut file = std::fs::File::options()
+            .create(true)
+            .truncate(true)
+            .write(true)
+            .open(file_path)?;
+        file.write_all(content.as_bytes())?;
+        Ok(())
+    }
+    pub fn get_output(&self) -> (String, String, bool, bool) {
+        let op_str = match &self.commands[0].op {
             Some(i) => i.as_str(),
             None => "",
         };
+        dbg!(&op_str);
         let op = Operation::from_str(op_str);
         match op {
-            Operation::CommandSeparator => self.output.clone(),
-            _ => "".to_string(),
+            Operation::CommandSeparator => {
+                 let output = self.last_output.clone()+" "+self.output.as_str();
+                ("".to_string(), output, false, true)
+            },
+            Operation::OutputRedirection => {
+                if self
+                    .write_in_file(&self.output, &self.commands[1].cmd[0])
+                    .is_ok(){
+                    return ("ok".to_string(), "".to_string(), true, true);
+                }
+                ("Error".to_string(), "".to_string(), true, false)
+            }
+            Operation::AndLogic => {
+                let mut jump = false;
+                let mut output = self.output.clone();
+                let mut succes = true;
+                if self.last_succes == false {
+                    jump = true;
+                    output = "".to_string();
+                    succes = false;
+                }
+                return (self.last_output.clone()+" "+output.as_str(), "".to_string(), jump, succes);
+            }
+            _ => ("".to_string(), "ceva".to_string(), false, false),
         }
     }
 }
