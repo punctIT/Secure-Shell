@@ -1,5 +1,5 @@
 use crate::command_system::command_runner::RunCommand;
-use crate::command_system::common::Command;
+use crate::command_system::common::{Command, Format, get_format};
 use crate::command_system::operation_handler::OperationHandler;
 use std::path::PathBuf;
 
@@ -18,18 +18,54 @@ impl CommandHandler {
     }
     fn run_commands(&mut self) -> Option<String> {
         let mut final_result: Option<String> = None;
-        for cmd in &self.cmds {
-            //dbg!(&self.cmds);
-            let mut runner = RunCommand::new(self.current_dir.clone(), self.root.clone(),cmd, None);
-            let (current_dir, result,succes) = runner.test();
-            self.current_dir = current_dir;
-            let operation = OperationHandler::new(result.unwrap_or("".to_string()), cmd);
-            let new_result =final_result.unwrap_or("".to_string()) + operation.get_output().as_str();
-            println!("{} ",succes);
-            final_result = Some(new_result);
+        let mut jump_cmd = false;
+
+        let mut last_succes = true;
+
+        let mut current_dir = self.current_dir.clone();
+        let mut cmd_succes = true;
+        let mut result: Option<String> = None;
+
+        let mut cmds_output = String::from("");
+        let mut input: Option<String> = None;
+        for (i, cmd) in self.cmds.clone().iter().enumerate() {
+            let op = cmd.op.clone().unwrap_or("".to_string());
+            if op == r"<" {
+                input = None;
+            }
+
+            if !jump_cmd {
+                let mut runner = RunCommand::new(
+                    self.current_dir.clone(),
+                    self.root.clone(),
+                    cmd,
+                    input.clone(),
+                );
+                (current_dir, result, cmd_succes) = runner.test();
+                self.current_dir = current_dir; //cd 
+            }
+            let sliced_cmds: Vec<Command> = self.cmds[i..].to_vec();
+            let operation = OperationHandler::new(
+                result.clone().unwrap_or("".to_string()),
+                cmds_output,
+                &sliced_cmds,
+                self.current_dir.clone(),
+                last_succes & cmd_succes,
+            );
+            let (current_output, output, jump, op_succes) = operation.get_output();
+            jump_cmd=jump;
+            cmds_output = current_output;
+            last_succes = op_succes & cmd_succes;
+            
+            if !output.is_empty() {
+                final_result = Some(final_result.unwrap_or("".to_string()) + output.as_str());
+            }
+            dbg!(&cmds_output);
+            dbg!(&final_result);
         }
         final_result
     }
+
     pub fn get_output(&mut self) -> (String, PathBuf) {
         //dbg!(&self.cmds);
         let output = self.run_commands().unwrap_or("12".to_string());

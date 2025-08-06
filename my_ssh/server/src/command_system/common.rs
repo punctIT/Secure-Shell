@@ -28,7 +28,7 @@ pub fn get_format(format: Format) -> &'static str {
     match format {
         Format::Error => "?&E",
         Format::ListDir => "?&L",
-        Format::Color("CYAN") => "^!",
+        Format::Color("BLUE") => "^!",
         Format::Split => "\n\n",
         _ => "",
     }

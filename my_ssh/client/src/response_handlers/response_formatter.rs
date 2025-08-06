@@ -13,7 +13,7 @@ fn get_color(color: &str) -> colored::Color {
 
 impl ShowResponse {
     pub fn new(response: String) -> Self {
-        ShowResponse { response}
+        ShowResponse { response }
     }
     fn show_list_style(&self, word: Vec<&str>) {
         fn print_space(len: usize) {

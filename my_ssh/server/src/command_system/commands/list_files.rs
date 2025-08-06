@@ -14,7 +14,7 @@ impl ListFiles {
             command: cmd,
         }
     }
-    fn get_files_current_dir(&self) -> (String,bool){
+    fn get_files_current_dir(&self) -> (String, bool) {
         let mut output: String = String::new();
         let files = get_files(&self.current_dir).unwrap();
         for file in files {
@@ -28,7 +28,7 @@ impl ListFiles {
             } else {
                 output += format!(
                     "{}{}{}",
-                    get_format(Format::Color("CYAN")),
+                    get_format(Format::Color("BLUE")),
                     f,
                     get_format(Format::Split)
                 )
@@ -41,11 +41,12 @@ impl ListFiles {
             get_format(Format::Split),
             output
         );
-        (output,true)
+        (output, true)
     }
-    fn get_files_in_dir_name(&self) -> (String,bool) {
+    //BUG TO FIX ls RS - ls rs da error
+    fn get_files_in_dir_name(&self) -> (String, bool) {
         let mut output: String = String::new();
-        let mut succes=false;
+        let mut succes = false;
         let paths: Vec<PathBuf> = self.command.cmd[1..]
             .iter()
             .map(|f| self.current_dir.join(f))
@@ -71,7 +72,7 @@ impl ListFiles {
                 for file in files {
                     let f = file
                         .strip_prefix(&path)
-                        .unwrap()
+                        .unwrap_or(&file)
                         .to_str()
                         .unwrap_or("default");
                     if file.is_file() {
@@ -79,13 +80,13 @@ impl ListFiles {
                     } else {
                         out += format!(
                             "{}{}{}",
-                            get_format(Format::Color("CYAN")),
+                            get_format(Format::Color("c")),
                             f,
                             get_format(Format::Split)
                         )
                         .as_str();
                     }
-                    succes=true;
+                    succes = true;
                 }
                 output = format!(
                     "{}{}{}{}",
@@ -96,9 +97,9 @@ impl ListFiles {
                 );
             }
         }
-        (output,succes)
+        (output, succes)
     }
-    pub fn get_output(&self) -> (String,bool) {
+    pub fn get_output(&self) -> (String, bool) {
         if self.command.cmd.len() == 1 {
             self.get_files_current_dir()
         } else {
