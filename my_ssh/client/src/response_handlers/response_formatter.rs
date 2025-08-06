@@ -60,6 +60,12 @@ impl ShowResponse {
                 Some('L') => {
                     self.show_list_style(word);
                 }
+                Some('N') => {
+                    for w in word{
+                        print!("{} ",w);
+                    }
+                    println!();
+                }
                 Some(_) => (),
                 None => {
                     // stringul e gol

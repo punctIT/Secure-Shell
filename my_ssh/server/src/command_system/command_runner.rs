@@ -1,4 +1,5 @@
 use crate::command_system::commands::change_directory::ChangeDIR;
+use crate::command_system::commands::echo::Echo;
 use crate::command_system::common::Format;
 use crate::command_system::{
     commands::list_files::ListFiles,
@@ -15,6 +16,7 @@ enum Commands {
     ChangeDirectory,
     PrintWorkingDirectory,
     ListFiles,
+    Echo,
     Unknown(String),
 }
 
@@ -24,6 +26,7 @@ impl Commands {
             "cd" | "next" => Commands::ChangeDirectory,
             "pwd" => Commands::PrintWorkingDirectory,
             "ls" => Commands::ListFiles,
+            "echo"=>Commands::Echo,
             other => Commands::Unknown(other.to_string()),
         }
     }
@@ -60,9 +63,21 @@ impl RunCommand {
                 let list = ListFiles::new(self.path.clone(), self.command.clone());
                 let (new_output, new_succes) = list.get_output();
                 output = Some(new_output);
+                if self.input.is_some(){
+                    output = Some("".to_string());
+                }
                 succes = new_succes;
             }
             Commands::PrintWorkingDirectory => {}
+            Commands::Echo=>{
+                let echo=Echo::new(self.command.clone());
+                let (new_output, new_succes) =echo.get_output();
+                output = Some(new_output);
+                if self.input.is_some(){
+                    output = Some("".to_string());
+                }
+                succes = new_succes;
+            }
             Commands::Unknown(cmd) => {
                 succes = false;
                 output = Some(format!(

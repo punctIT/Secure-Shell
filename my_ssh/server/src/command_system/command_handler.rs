@@ -1,5 +1,5 @@
 use crate::command_system::command_runner::RunCommand;
-use crate::command_system::common::{Command, Format, get_format};
+use crate::command_system::common::{Command};
 use crate::command_system::operation_handler::OperationHandler;
 use std::path::PathBuf;
 
@@ -23,6 +23,7 @@ impl CommandHandler {
         let mut last_succes = true;
 
         let mut current_dir = self.current_dir.clone();
+        let _ = current_dir;
         let mut cmd_succes = true;
         let mut result: Option<String> = None;
 
@@ -30,8 +31,13 @@ impl CommandHandler {
         let mut input: Option<String> = None;
         for (i, cmd) in self.cmds.clone().iter().enumerate() {
             let op = cmd.op.clone().unwrap_or("".to_string());
-            if op == r"<" {
-                input = None;
+            if i > 0 {
+                let prev_op = self.cmds[i-1].op.clone().unwrap_or("".to_string());
+                if prev_op == "|" {
+                    input = result.clone();
+                } else {
+                    input = None;
+                }
             }
 
             if !jump_cmd {
@@ -52,16 +58,23 @@ impl CommandHandler {
                 self.current_dir.clone(),
                 last_succes & cmd_succes,
             );
-            let (current_output, output, jump, op_succes) = operation.get_output();
+            let (mut current_output, output, jump, op_succes) = operation.get_output();
             jump_cmd=jump;
+            if op == ">" && jump_cmd {
+                result = None;
+            }
+            if op == "||" && !jump_cmd {
+                final_result = None;
+                current_output=String::from("");
+            }
             cmds_output = current_output;
             last_succes = op_succes & cmd_succes;
-            
+            //dbg!(&input);
             if !output.is_empty() {
                 final_result = Some(final_result.unwrap_or("".to_string()) + output.as_str());
             }
-            dbg!(&cmds_output);
-            dbg!(&final_result);
+            //dbg!(&cmds_output);
+            //dbg!(&final_result);
         }
         final_result
     }
