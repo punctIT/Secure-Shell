@@ -1,6 +1,5 @@
 use std::io::Write;
-
-use crate::command_system::common::Command;
+use crate::command_system::common::{Command};
 
 enum Operation {
     Pipe,
@@ -70,7 +69,7 @@ impl OperationHandler {
             Some(i) => i.as_str(),
             None => "",
         };
-        dbg!(&op_str);
+        //dbg!(&op_str);
         let op = Operation::from_str(op_str);
         match op {
             Operation::CommandSeparator => {
@@ -81,7 +80,7 @@ impl OperationHandler {
                 if self
                     .write_in_file(&self.output, &self.commands[1].cmd[0])
                     .is_ok(){
-                    return ("ok".to_string(), "".to_string(), true, true);
+                    return ("".to_string(), "".to_string(), true, true);
                 }
                 ("Error".to_string(), "".to_string(), true, false)
             }
@@ -96,7 +95,22 @@ impl OperationHandler {
                 }
                 return (self.last_output.clone()+" "+output.as_str(), "".to_string(), jump, succes);
             }
-            _ => ("".to_string(), "ceva".to_string(), false, false),
+            Operation::OrLogic=>{
+                let mut jump = false;
+                let mut output = self.output.clone();
+                let mut succes = true;
+                if self.last_succes == true {
+                    jump = true;
+                    output = "".to_string();
+                    succes = true;
+                }
+                return (self.last_output.clone()+" "+output.as_str(), "".to_string(), jump, succes);
+            }
+            Operation::Pipe=>{
+                return (self.last_output.clone()+" "+ self.output.as_str(), "".to_string(), false, true);
+            }
+            ,
+            _ => ("".to_string(), "".to_string(), false, false),
         }
     }
 }

@@ -23,6 +23,7 @@ pub enum Format {
     ListDir,
     Color(&'static str),
     Split,
+    Normal,
 }
 pub fn get_format(format: Format) -> &'static str {
     match format {
@@ -30,6 +31,7 @@ pub fn get_format(format: Format) -> &'static str {
         Format::ListDir => "?&L",
         Format::Color("BLUE") => "^!",
         Format::Split => "\n\n",
+        Format::Normal=>"?&N",
         _ => "",
     }
 }
