@@ -19,18 +19,20 @@ impl CommandHandler {
     fn run_commands(&mut self) -> Option<String> {
         let mut final_result: Option<String> = None;
         for cmd in &self.cmds {
-            let mut runner = RunCommand::new(self.current_dir.clone(), cmd, None);
-            let (current_dir, result) = runner.test();
+            //dbg!(&self.cmds);
+            let mut runner = RunCommand::new(self.current_dir.clone(), self.root.clone(),cmd, None);
+            let (current_dir, result,succes) = runner.test();
             self.current_dir = current_dir;
             let operation = OperationHandler::new(result.unwrap_or("".to_string()), cmd);
-            let new_result =
-                final_result.unwrap_or("".to_string()) + operation.get_output().as_str();
+            let new_result =final_result.unwrap_or("".to_string()) + operation.get_output().as_str();
+            println!("{} ",succes);
             final_result = Some(new_result);
         }
         final_result
     }
     pub fn get_output(&mut self) -> (String, PathBuf) {
-        let output = self.run_commands().unwrap_or_else(|| "".to_string());
+        //dbg!(&self.cmds);
+        let output = self.run_commands().unwrap_or("12".to_string());
 
         let current_dir = match self.current_dir.strip_prefix(&self.root) {
             Ok(path) => path,
@@ -39,19 +41,20 @@ impl CommandHandler {
                 std::path::Path::new("")
             }
         };
-        let reply = format!("{}\r\n:{}\r\n", output.trim(), current_dir.display());
-        return (reply, self.current_dir.clone());
+        let reply = format!("{}\r\n:{}\r\n", output, current_dir.display());
+        //dbg!(&reply);
+        (reply, self.current_dir.clone())
     }
 
     fn get_commands(client_input: String) -> Vec<Command> {
         let mut cmds: Vec<Command> = Vec::new();
         let splited_input: Vec<&str> = client_input.split_whitespace().collect();
-        let mut iter_splited_input = splited_input.iter();
+        let iter_splited_input = splited_input.iter();
         let op = ["&&", "|", "||", "<", ">", ";"];
 
         let mut current_cmd: Vec<String> = Vec::new();
-        while let Some(c) = iter_splited_input.next() {
-            if op.contains(&c.as_ref()) {
+        for c in iter_splited_input {
+            if op.contains(c) {
                 cmds.push(Command {
                     cmd: current_cmd.clone(),
                     op: Some(c.to_string()),

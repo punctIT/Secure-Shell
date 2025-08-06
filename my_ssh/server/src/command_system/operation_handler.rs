@@ -7,7 +7,6 @@ enum Operation {
     AndLogic,
     OrLogic,
     CommandSeparator,
-    Unknown(String),
 }
 
 impl Operation {
@@ -19,7 +18,7 @@ impl Operation {
             "&&" => Operation::AndLogic,
             "||" => Operation::OrLogic,
             ";" | "" => Operation::CommandSeparator,
-            other => Operation::Unknown(other.to_string()),
+            _ => Operation::CommandSeparator,
         }
     }
 }
@@ -31,7 +30,7 @@ pub struct OperationHandler {
 impl OperationHandler {
     pub fn new(output: String, command: &Command) -> Self {
         OperationHandler {
-            output: output,
+            output,
             command: command.clone(),
         }
     }
@@ -41,10 +40,9 @@ impl OperationHandler {
             None => "",
         };
         let op = Operation::from_str(op_str);
-        let output = match op {
+        match op {
             Operation::CommandSeparator => self.output.clone(),
             _ => "".to_string(),
-        };
-        output
+        }
     }
 }
