@@ -61,14 +61,15 @@ impl ShowResponse {
                     self.show_list_style(word);
                 }
                 Some('N') => {
-                    for w in word{
-                        print!("{} ",w);
+                    for w in word {
+                        if !w.is_empty() {
+                            print!("{} ", w);
+                        }
                     }
                     println!();
                 }
                 Some(_) => (),
                 None => {
-                    // stringul e gol
                     println!("String gol");
                 }
             }

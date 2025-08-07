@@ -31,7 +31,7 @@ pub fn get_format(format: Format) -> &'static str {
         Format::ListDir => "?&L",
         Format::Color("BLUE") => "^!",
         Format::Split => "\n\n",
-        Format::Normal=>"?&N",
+        Format::Normal => "?&N",
         _ => "",
     }
 }

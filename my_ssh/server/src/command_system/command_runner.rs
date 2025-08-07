@@ -1,5 +1,6 @@
 use crate::command_system::commands::change_directory::ChangeDIR;
 use crate::command_system::commands::echo::Echo;
+use crate::command_system::commands::word_count::WordCount;
 use crate::command_system::common::Format;
 use crate::command_system::{
     commands::list_files::ListFiles,
@@ -17,6 +18,7 @@ enum Commands {
     PrintWorkingDirectory,
     ListFiles,
     Echo,
+    WordCount,
     Unknown(String),
 }
 
@@ -26,7 +28,8 @@ impl Commands {
             "cd" | "next" => Commands::ChangeDirectory,
             "pwd" => Commands::PrintWorkingDirectory,
             "ls" => Commands::ListFiles,
-            "echo"=>Commands::Echo,
+            "echo" => Commands::Echo,
+            "wc" => Commands::WordCount,
             other => Commands::Unknown(other.to_string()),
         }
     }
@@ -63,17 +66,24 @@ impl RunCommand {
                 let list = ListFiles::new(self.path.clone(), self.command.clone());
                 let (new_output, new_succes) = list.get_output();
                 output = Some(new_output);
-                if self.input.is_some(){
+                if self.input.is_some() {
                     output = Some("".to_string());
                 }
                 succes = new_succes;
             }
-            Commands::PrintWorkingDirectory => {}
-            Commands::Echo=>{
-                let echo=Echo::new(self.command.clone());
-                let (new_output, new_succes) =echo.get_output();
+            Commands::WordCount => {
+                let wc =
+                    WordCount::new(self.command.clone(), self.input.clone(), self.path.clone());
+                let (new_output, new_succes) = wc.get_output();
                 output = Some(new_output);
-                if self.input.is_some(){
+                succes = new_succes;
+            }
+            Commands::PrintWorkingDirectory => {}
+            Commands::Echo => {
+                let echo = Echo::new(self.command.clone());
+                let (new_output, new_succes) = echo.get_output();
+                output = Some(new_output);
+                if self.input.is_some() {
                     output = Some("".to_string());
                 }
                 succes = new_succes;

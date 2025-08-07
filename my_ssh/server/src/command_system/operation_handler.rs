@@ -1,5 +1,5 @@
+use crate::command_system::common::Command;
 use std::io::Write;
-use crate::command_system::common::{Command};
 
 enum Operation {
     Pipe,
@@ -26,7 +26,7 @@ impl Operation {
 
 pub struct OperationHandler {
     output: String,
-    last_output:String,
+    last_output: String,
     commands: Vec<Command>,
     current_dir: std::path::PathBuf,
     last_succes: bool,
@@ -34,15 +34,15 @@ pub struct OperationHandler {
 impl OperationHandler {
     pub fn new(
         output: String,
-        last_output:String,
-        command: &Vec<Command>,
+        last_output: String,
+        command: &[Command],
         path: std::path::PathBuf,
         last_succes: bool,
     ) -> Self {
         OperationHandler {
             output,
             last_output,
-            commands: command.clone(),
+            commands: command.to_owned(),
             current_dir: path,
             last_succes,
         }
@@ -73,13 +73,14 @@ impl OperationHandler {
         let op = Operation::from_str(op_str);
         match op {
             Operation::CommandSeparator => {
-                 let output = self.last_output.clone()+" "+self.output.as_str();
+                let output = self.last_output.clone() + " " + self.output.as_str();
                 ("".to_string(), output, false, true)
-            },
+            }
             Operation::OutputRedirection => {
                 if self
                     .write_in_file(&self.output, &self.commands[1].cmd[0])
-                    .is_ok(){
+                    .is_ok()
+                {
                     return ("".to_string(), "".to_string(), true, true);
                 }
                 ("Error".to_string(), "".to_string(), true, false)
@@ -88,29 +89,41 @@ impl OperationHandler {
                 let mut jump = false;
                 let mut output = self.output.clone();
                 let mut succes = true;
-                if self.last_succes == false {
+                if !self.last_succes {
                     jump = true;
                     output = "".to_string();
                     succes = false;
                 }
-                return (self.last_output.clone()+" "+output.as_str(), "".to_string(), jump, succes);
+                (
+                    self.last_output.clone() + " " + output.as_str(),
+                    "".to_string(),
+                    jump,
+                    succes,
+                )
             }
-            Operation::OrLogic=>{
+            Operation::InputRedirection => ("".to_string(), "".to_string(), true, true),
+            Operation::OrLogic => {
                 let mut jump = false;
                 let mut output = self.output.clone();
                 let mut succes = true;
-                if self.last_succes == true {
+                if self.last_succes {
                     jump = true;
                     output = "".to_string();
                     succes = true;
                 }
-                return (self.last_output.clone()+" "+output.as_str(), "".to_string(), jump, succes);
+                (
+                    self.last_output.clone() + " " + output.as_str(),
+                    "".to_string(),
+                    jump,
+                    succes,
+                )
             }
-            Operation::Pipe=>{
-                return (self.last_output.clone()+" "+ self.output.as_str(), "".to_string(), false, true);
-            }
-            ,
-            _ => ("".to_string(), "".to_string(), false, false),
+            Operation::Pipe => (
+                self.last_output.clone() + " " + self.output.as_str(),
+                "".to_string(),
+                false,
+                true,
+            ),
         }
     }
 }
