@@ -10,7 +10,7 @@ pub struct ListFiles {
 impl ListFiles {
     pub fn new(path: std::path::PathBuf, cmd: Command) -> Self {
         ListFiles {
-            current_dir: path,
+            current_dir: path.canonicalize().unwrap_or(path),
             command: cmd,
         }
     }
@@ -43,7 +43,6 @@ impl ListFiles {
         );
         (output, true)
     }
-    //BUG TO FIX ls RS - ls rs da error
     fn get_files_in_dir_name(&self) -> (String, bool) {
         let mut output: String = String::new();
         let mut succes = false;
@@ -71,8 +70,8 @@ impl ListFiles {
                 let files = get_files(&path).unwrap();
                 for file in files {
                     let f = file
-                        .strip_prefix(&path)
-                        .unwrap_or(&file)
+                        .strip_prefix(path.canonicalize().unwrap())
+                        .unwrap_or(std::path::Path::new(""))
                         .to_str()
                         .unwrap_or("default");
                     if file.is_file() {
@@ -80,7 +79,7 @@ impl ListFiles {
                     } else {
                         out += format!(
                             "{}{}{}",
-                            get_format(Format::Color("c")),
+                            get_format(Format::Color("BLUE")),
                             f,
                             get_format(Format::Split)
                         )

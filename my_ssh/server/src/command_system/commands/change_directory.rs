@@ -22,7 +22,23 @@ impl ChangeDIR {
         } else if self.command.cmd.len() == 2 {
             let path_file = self.current_dir.join(&self.command.cmd[1]);
             if path_file.exists() && path_file.is_dir() {
-                new_path = path_file;
+                new_path = path_file.clone();
+            }
+            if !path_file.exists() {
+                output = format!(
+                    "{}{}{}",
+                    get_format(Format::Error),
+                    "cd: No such file or directory",
+                    get_format(Format::Split),
+                );
+            }
+            if path_file.is_file() {
+                output = format!(
+                    "{}{}{}",
+                    get_format(Format::Error),
+                    "cd: Not a directory",
+                    get_format(Format::Split),
+                );
             }
         } else {
             output = format!(

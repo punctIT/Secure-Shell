@@ -1,6 +1,7 @@
 use crate::command_system::command_runner::RunCommand;
-use crate::command_system::common::{Command};
+use crate::command_system::common::Command;
 use crate::command_system::operation_handler::OperationHandler;
+use shell_words::split;
 use std::path::PathBuf;
 
 pub struct CommandHandler {
@@ -31,15 +32,12 @@ impl CommandHandler {
         let mut input: Option<String> = None;
         for (i, cmd) in self.cmds.clone().iter().enumerate() {
             let op = cmd.op.clone().unwrap_or("".to_string());
-            if i > 0 {
-                let prev_op = self.cmds[i-1].op.clone().unwrap_or("".to_string());
-                if prev_op == "|" {
-                    input = result.clone();
-                } else {
-                    input = None;
-                }
+            if op == "<" {
+                input = Some(
+                    std::fs::read_to_string(self.current_dir.join(&self.cmds[i + 1].cmd[0]))
+                        .unwrap_or("".to_string()),
+                );
             }
-
             if !jump_cmd {
                 let mut runner = RunCommand::new(
                     self.current_dir.clone(),
@@ -59,14 +57,19 @@ impl CommandHandler {
                 last_succes & cmd_succes,
             );
             let (mut current_output, output, jump, op_succes) = operation.get_output();
-            jump_cmd=jump;
+            jump_cmd = jump;
+            if op == "|" {
+                input = result.clone();
+                current_output = String::from("");
+            }
             if op == ">" && jump_cmd {
                 result = None;
             }
             if op == "||" && !jump_cmd {
                 final_result = None;
-                current_output=String::from("");
+                current_output = String::from("");
             }
+
             cmds_output = current_output;
             last_succes = op_succes & cmd_succes;
             //dbg!(&input);
@@ -97,20 +100,23 @@ impl CommandHandler {
 
     fn get_commands(client_input: String) -> Vec<Command> {
         let mut cmds: Vec<Command> = Vec::new();
-        let splited_input: Vec<&str> = client_input.split_whitespace().collect();
-        let iter_splited_input = splited_input.iter();
         let op = ["&&", "|", "||", "<", ">", ";"];
 
+        let parsed = match split(client_input.trim()) {
+            Ok(v) => v,
+            Err(_) => return cmds,
+        };
+
         let mut current_cmd: Vec<String> = Vec::new();
-        for c in iter_splited_input {
-            if op.contains(c) {
+        for token in parsed {
+            if op.contains(&token.as_str()) {
                 cmds.push(Command {
                     cmd: current_cmd.clone(),
-                    op: Some(c.to_string()),
+                    op: Some(token),
                 });
                 current_cmd.clear();
             } else {
-                current_cmd.push(c.to_string());
+                current_cmd.push(token);
             }
         }
 
