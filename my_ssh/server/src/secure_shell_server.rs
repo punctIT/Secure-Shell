@@ -64,18 +64,24 @@ impl SecureShellServer {
                         return;
                     }
                 };
-                println!("Client TLS conectat: {}", addr);
+                println!("Client TLS :connected {}", addr);
+                if let Err(e) = tls_stream
+                    .write_all("?&NWelcome\nThis is a secure shell\r\n".as_bytes())
+                    .await
+                {
+                    eprintln!("Write Error: {:?}", e);
+                }
                 let mut server_path = root_path.clone();
                 let mut buf = vec![0u8; 1024];
                 loop {
                     match tls_stream.read(&mut buf).await {
                         Ok(0) => {
-                            println!("Clientul s-a deconectat");
+                            println!("client disconected {}", addr);
                             break;
                         }
                         Ok(n) => {
                             let received = String::from_utf8_lossy(&buf[..n]);
-                            println!("Am primit: {}", received.trim());
+                            println!("{} sent: {}", addr, received.trim());
                             if received.trim() == "stop" {
                                 std::process::exit(1);
                             }
@@ -88,11 +94,11 @@ impl SecureShellServer {
                             server_path = new_server_path;
                             //dbg!(&reply);
                             if let Err(e) = tls_stream.write_all(reply.as_bytes()).await {
-                                eprintln!("Eroare la scriere: {:?}", e);
+                                eprintln!("Write Error: {:?}", e);
                             }
                         }
                         Err(e) => {
-                            eprintln!("Eroare la citire: {:?}", e);
+                            eprintln!("Read Error: {:?}", e);
                             break;
                         }
                     }

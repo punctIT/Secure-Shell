@@ -1,4 +1,4 @@
-use crate::command_system::common::Command;
+use crate::command_system::common::{Command, get_unformated_text};
 use std::io::Write;
 
 enum Operation {
@@ -61,7 +61,7 @@ impl OperationHandler {
             .truncate(true)
             .write(true)
             .open(file_path)?;
-        file.write_all(content.as_bytes())?;
+        file.write_all(get_unformated_text(content).as_bytes())?;
         Ok(())
     }
     pub fn get_output(&self) -> (String, String, bool, bool) {

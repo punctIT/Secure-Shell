@@ -35,3 +35,27 @@ pub fn get_format(format: Format) -> &'static str {
         _ => "",
     }
 }
+pub fn get_unformated_text(text: &String) -> String {
+    let mut new_text = String::new();
+    let props: Vec<&str> = text.split("?&").filter(|f| !f.is_empty()).collect();
+    for w in props {
+        let word: Vec<&str> = w[1..].split("\n\n").filter(|f| !f.is_empty()).collect();
+        for e in word {
+            if e.starts_with('^') {
+                let tail: String = e.chars().skip(2).collect();
+                if new_text.is_empty() {
+                    new_text=tail;
+                } else {
+                    new_text = format!("{} {}", new_text, tail);
+                }
+            } else {
+                if new_text.is_empty() {
+                    new_text=e.to_string();
+                } else {
+                    new_text = format!("{} {}", new_text, e);
+                }
+            }
+        }
+    }
+    new_text
+}

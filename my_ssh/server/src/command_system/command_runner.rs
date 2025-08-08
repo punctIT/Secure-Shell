@@ -1,4 +1,5 @@
 use crate::command_system::commands::change_directory::ChangeDIR;
+use crate::command_system::commands::concatenate::Cat;
 use crate::command_system::commands::echo::Echo;
 use crate::command_system::commands::word_count::WordCount;
 use crate::command_system::common::Format;
@@ -18,6 +19,7 @@ enum Commands {
     PrintWorkingDirectory,
     ListFiles,
     Echo,
+    Cat,
     WordCount,
     Unknown(String),
 }
@@ -30,6 +32,7 @@ impl Commands {
             "ls" => Commands::ListFiles,
             "echo" => Commands::Echo,
             "wc" => Commands::WordCount,
+            "cat"=>Commands::Cat,
             other => Commands::Unknown(other.to_string()),
         }
     }
@@ -69,6 +72,12 @@ impl RunCommand {
                 if self.input.is_some() {
                     output = Some("".to_string());
                 }
+                succes = new_succes;
+            }
+            Commands::Cat=>{
+                let cat = Cat::new(self.command.clone(),self.path.clone());
+                let (new_output, new_succes) = cat.get_output();
+                output = Some(new_output);
                 succes = new_succes;
             }
             Commands::WordCount => {

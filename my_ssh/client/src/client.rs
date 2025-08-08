@@ -57,15 +57,26 @@ impl Client {
         let tls_stream = self.tls_stream.as_mut().unwrap_or_else(|| {
             panic!("Error TLS not configured");
         });
-        print!(">");
+
+        let mut buf = vec![0u8; 1024];
+        let n = tls_stream.read(&mut buf).await?;
+
+        let answer = String::from_utf8_lossy(&buf[..n]);
+        let r: Vec<&str> = answer.split("\r\n").collect();
+        let resonse = ShowResponse::new(r[0].to_string());
+        resonse.show();
+        print!("{}{}>", "Server".cyan(), r[1].cyan());
         std::io::stdout().flush().unwrap();
+
         loop {
             let mut mesaj = String::new();
             std::io::stdin().read_line(&mut mesaj).expect("Read Error");
             if mesaj.trim() == "exit" {
-                break;
+                tls_stream.shutdown().await?;
+                return Ok(());
             }
             tls_stream.write_all(mesaj.as_bytes()).await?;
+
             let mut buf = vec![0u8; 1024];
             let n = tls_stream.read(&mut buf).await?;
 
@@ -76,7 +87,6 @@ impl Client {
             print!("{}{}>", "Server".cyan(), r[1].cyan());
             std::io::stdout().flush().unwrap();
         }
-        Ok(())
     }
     fn load_cert(path: &str) -> Result<Certificate, Box<dyn std::error::Error>> {
         let certfile = File::open(path)?;
