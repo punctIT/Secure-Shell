@@ -24,18 +24,22 @@ pub enum Format {
     Color(&'static str),
     Split,
     Normal,
+    NormalColored,
 }
 pub fn get_format(format: Format) -> &'static str {
     match format {
         Format::Error => "?&E",
         Format::ListDir => "?&L",
-        Format::Color("BLUE") => "^!",
-        Format::Split => "\n\n",
+        Format::NormalColored => "?&C",
         Format::Normal => "?&N",
+        Format::Color("BLUE") => "^!",
+        Format::Color("LIGHT_RED") => "^@",
+        Format::Color("stop") => "~~",
+        Format::Split => "\n\n",
         _ => "",
     }
 }
-pub fn get_unformated_text(text: &String) -> String {
+pub fn get_unformated_text(text: &str) -> String {
     let mut new_text = String::new();
     let props: Vec<&str> = text.split("?&").filter(|f| !f.is_empty()).collect();
     for w in props {
@@ -44,16 +48,14 @@ pub fn get_unformated_text(text: &String) -> String {
             if e.starts_with('^') {
                 let tail: String = e.chars().skip(2).collect();
                 if new_text.is_empty() {
-                    new_text=tail;
+                    new_text = tail;
                 } else {
                     new_text = format!("{} {}", new_text, tail);
                 }
+            } else if new_text.is_empty() {
+                new_text = e.to_string();
             } else {
-                if new_text.is_empty() {
-                    new_text=e.to_string();
-                } else {
-                    new_text = format!("{} {}", new_text, e);
-                }
+                new_text = format!("{} {}", new_text, e);
             }
         }
     }

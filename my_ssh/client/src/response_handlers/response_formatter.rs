@@ -44,6 +44,35 @@ impl ShowResponse {
         }
         println!()
     }
+    fn show_grep_style(&self, word: Vec<&str>) {
+        for w in word {
+            if !w.is_empty() {
+                let mut red_status = false;
+                let chars: Vec<_> = w.chars().collect();
+                let mut i = 0;
+                while i < chars.len() {
+                    let c = chars[i];
+                    if i + 1 < chars.len() && c == '^' && chars[i + 1] == '@' {
+                        red_status = true;
+                        i += 2;
+                        continue;
+                    }
+                    if i + 1 < chars.len() && c == '~' && chars[i + 1] == '~' {
+                        red_status = false;
+                        i += 2;
+                        continue;
+                    }
+                    if red_status {
+                        print!("{}", c.to_string().bright_red());
+                    } else {
+                        print!("{}", c);
+                    }
+                    i += 1;
+                }
+            }
+        }
+        println!();
+    }
     fn split_response(&self) {
         let props: Vec<&str> = self
             .response
@@ -59,6 +88,9 @@ impl ShowResponse {
                 }
                 Some('L') => {
                     self.show_list_style(word);
+                }
+                Some('C') => {
+                    self.show_grep_style(word);
                 }
                 Some('N') => {
                     for w in word {

@@ -62,7 +62,7 @@ impl Client {
         let n = tls_stream.read(&mut buf).await?;
 
         let answer = String::from_utf8_lossy(&buf[..n]);
-        let r: Vec<&str> = answer.split("\r\n").collect();
+        let r: Vec<&str> = answer.split("[-]").collect();
         let resonse = ShowResponse::new(r[0].to_string());
         resonse.show();
         print!("{}{}>", "Server".cyan(), r[1].cyan());
@@ -81,7 +81,7 @@ impl Client {
             let n = tls_stream.read(&mut buf).await?;
 
             let answer = String::from_utf8_lossy(&buf[..n]);
-            let r: Vec<&str> = answer.split("\r\n").collect();
+            let r: Vec<&str> = answer.split("[-]").collect();
             let resonse = ShowResponse::new(r[0].to_string());
             resonse.show();
             print!("{}{}>", "Server".cyan(), r[1].cyan());
