@@ -1,4 +1,4 @@
-use crate::command_system::common::{Command, Format, get_format};
+use crate::command_system::common::{Command, Format, get_format, get_unformated_text};
 
 pub struct Grep {
     command: Command,
@@ -20,7 +20,7 @@ impl Grep {
             let mut line_output = String::new();
             let mut line_has_pattern = false;
 
-            for part in line.split(|c: char| c == ' ').filter(|s| !s.is_empty()) {
+            for part in line.split(' ').filter(|s| !s.is_empty()) {
                 if part.contains(pattern) {
                     line_has_pattern = true;
                     let mut remaining_part = part;
@@ -48,7 +48,7 @@ impl Grep {
 
                         remaining_part = &remaining_part[next_start..];
                     }
-                    if !remaining_part.is_empty() && remaining_part.find(pattern).is_none() {
+                    if !remaining_part.is_empty() && !remaining_part.contains(pattern) {
                         line_output = format!("{}{}", line_output, remaining_part);
                     }
                 }
@@ -108,10 +108,12 @@ impl Grep {
                 }
             }
             succes = true;
-        }
-        else if self.command.cmd.len()==2&&self.input.is_some(){
+        } else if self.command.cmd.len() == 2 && self.input.is_some() {
             let pattern = self.command.cmd[1].clone();
-            output=self.get_colored_output(self.input.clone().unwrap(), &pattern)
+            output = self.get_colored_output(
+                get_unformated_text(self.input.clone().unwrap().as_str()),
+                &pattern,
+            )
         }
         (output, succes)
     }

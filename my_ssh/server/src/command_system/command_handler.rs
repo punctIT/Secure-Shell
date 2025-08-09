@@ -93,7 +93,7 @@ impl CommandHandler {
                 std::path::Path::new("")
             }
         };
-        let reply = format!("{}[-]:{}[-]", output, current_dir.display());
+        let reply = format!("{}[-]:{}[-]\r\n\r\n", output, current_dir.display());
         //dbg!(&reply);
         (reply, self.current_dir.clone())
     }

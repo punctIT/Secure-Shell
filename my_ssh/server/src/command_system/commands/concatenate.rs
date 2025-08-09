@@ -19,7 +19,7 @@ impl Cat {
                 let new_path = self.current_dir.join(file);
                 if new_path.exists() && new_path.is_file() {
                     let text = std::fs::read_to_string(&new_path).unwrap_or("".to_string());
-                    dbg!(&text);
+                    //dbg!(&text);
                     if output.is_empty() {
                         output = text;
                     } else {

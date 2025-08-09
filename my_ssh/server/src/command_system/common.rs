@@ -44,19 +44,45 @@ pub fn get_unformated_text(text: &str) -> String {
     let props: Vec<&str> = text.split("?&").filter(|f| !f.is_empty()).collect();
     for w in props {
         let word: Vec<&str> = w[1..].split("\n\n").filter(|f| !f.is_empty()).collect();
-        for e in word {
-            if e.starts_with('^') {
-                let tail: String = e.chars().skip(2).collect();
-                if new_text.is_empty() {
-                    new_text = tail;
-                } else {
-                    new_text = format!("{} {}", new_text, tail);
+        match w.chars().next() {
+            Some('C') => {
+                for e in word {
+                    let chars: Vec<_> = e.chars().collect();
+                    let mut i = 0;
+                    while i < chars.len() {
+                        let c = chars[i];
+                        if i + 1 < chars.len() && c == '^' && chars[i + 1] == '@' {
+                            i += 2;
+                            continue;
+                        }
+                        if i + 1 < chars.len() && c == '~' && chars[i + 1] == '~' {
+                            i += 2;
+                            continue;
+                        }
+
+                        new_text = format!("{}{}", new_text, c);
+
+                        i += 1;
+                    }
                 }
-            } else if new_text.is_empty() {
-                new_text = e.to_string();
-            } else {
-                new_text = format!("{} {}", new_text, e);
             }
+            Some(_) => {
+                for e in word {
+                    if e.starts_with('^') {
+                        let tail: String = e.chars().skip(2).collect();
+                        if new_text.is_empty() {
+                            new_text = tail;
+                        } else {
+                            new_text = format!("{} {}", new_text, tail);
+                        }
+                    } else if new_text.is_empty() {
+                        new_text = e.to_string();
+                    } else {
+                        new_text = format!("{} {}", new_text, e);
+                    }
+                }
+            }
+            None => (),
         }
     }
     new_text
