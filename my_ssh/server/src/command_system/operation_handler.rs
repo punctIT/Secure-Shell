@@ -49,7 +49,7 @@ impl OperationHandler {
     }
     fn write_in_file(
         &self,
-        content: &String,
+        content: &str,
         name: &String,
     ) -> Result<(), Box<dyn std::error::Error>> {
         let file_path = self.current_dir.join(name);

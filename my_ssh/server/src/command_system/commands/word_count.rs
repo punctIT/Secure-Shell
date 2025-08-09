@@ -1,8 +1,8 @@
-use crate::command_system::common::{Command, Format, get_format};
+use crate::command_system::common::{Command, Format, get_format, get_unformated_text};
 
 pub struct WordCount {
     command: Command,
-    currect_dir: std::path::PathBuf,
+    current_dir: std::path::PathBuf,
     input: Option<String>,
 }
 
@@ -10,7 +10,7 @@ impl WordCount {
     pub fn new(cmd: Command, input: Option<String>, path: std::path::PathBuf) -> Self {
         WordCount {
             command: cmd,
-            currect_dir: path,
+            current_dir: path,
             input,
         }
     }
@@ -21,7 +21,7 @@ impl WordCount {
             if i.is_empty() {
                 status = false;
             }
-            count = i.split_whitespace().count();
+            count = get_unformated_text(&i).split_whitespace().count();
         } else {
             status = false;
         }
@@ -40,7 +40,7 @@ impl WordCount {
         if self.command.cmd.len() != 1 {
             let mut output: String = String::new();
             for cmd in &self.command.cmd[1..] {
-                let file_path = self.currect_dir.join(cmd);
+                let file_path = self.current_dir.join(cmd);
                 if !file_path.exists() {
                     if !output.is_empty() {
                         output =

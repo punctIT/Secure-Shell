@@ -66,7 +66,7 @@ impl SecureShellServer {
                 };
                 println!("Client TLS :connected {}", addr);
                 if let Err(e) = tls_stream
-                    .write_all("?&NWelcome\nThis is a secure shell\r\n".as_bytes())
+                    .write_all("?&NWelcome\nThis is a secure shell[-]".as_bytes())
                     .await
                 {
                     eprintln!("Write Error: {:?}", e);
