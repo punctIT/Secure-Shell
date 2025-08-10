@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use crate::command_system::common::{Command, Format, get_files, get_format};
+use crate::command_system::common::{Command, Format, get_files, get_format, is_executable};
 
 pub struct ListFiles {
     current_dir: std::path::PathBuf,
@@ -24,7 +24,18 @@ impl ListFiles {
                 .to_str()
                 .unwrap_or("default");
             if file.is_file() {
-                output += format!("{}{}", f, get_format(Format::Split)).as_str();
+                let status = is_executable(file.clone()).unwrap_or(false);
+                if status {
+                    output += format!(
+                        "{}{}{}",
+                        get_format(Format::Color("GREEN")),
+                        f,
+                        get_format(Format::Split)
+                    )
+                    .as_str();
+                } else {
+                    output += format!("{}{}", f, get_format(Format::Split)).as_str();
+                }
             } else {
                 output += format!(
                     "{}{}{}",
