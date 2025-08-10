@@ -90,7 +90,7 @@ impl SecureShellServer {
                                 root_path.clone(),
                                 server_path.clone(),
                             );
-                            let (reply, new_server_path) = command_handler.get_output();
+                            let (reply, new_server_path) = command_handler.get_output().await;
                             server_path = new_server_path;
                             //dbg!(&reply);
                             if let Err(e) = tls_stream.write_all(reply.as_bytes()).await {

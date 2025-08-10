@@ -34,6 +34,7 @@ pub fn get_format(format: Format) -> &'static str {
         Format::Normal => "?&N",
         Format::Color("BLUE") => "^!",
         Format::Color("LIGHT_RED") => "^@",
+        Format::Color("GREEN") => "^#",
         Format::Color("stop") => "~~",
         Format::Split => "\n\n",
         _ => "",
@@ -86,4 +87,26 @@ pub fn get_unformated_text(text: &str) -> String {
         }
     }
     new_text
+}
+
+#[cfg(unix)]
+pub fn is_executable(path: std::path::PathBuf) -> std::io::Result<bool> {
+    use std::fs;
+    use std::os::unix::fs::PermissionsExt;
+    let metadata = fs::metadata(path)?;
+    Ok(metadata.permissions().mode() & 0o111 != 0)
+}
+
+#[cfg(windows)]
+pub fn is_executable(path: std::path::PathBuf) -> std::io::Result<bool> {
+    if !path.exists() {
+        return Ok(false);
+    }
+    Ok(matches!(
+        path.extension()
+            .and_then(|e| e.to_str())
+            .map(|s| s.to_ascii_lowercase())
+            .as_deref(),
+        Some("exe") | Some("bat") | Some("cmd") | Some("com")
+    ))
 }

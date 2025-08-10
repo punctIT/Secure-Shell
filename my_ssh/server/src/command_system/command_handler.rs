@@ -17,7 +17,7 @@ impl CommandHandler {
             current_dir: std::fs::canonicalize(&current_dir).unwrap_or(current_dir),
         }
     }
-    fn run_commands(&mut self) -> Option<String> {
+    async fn run_commands(&mut self) -> Option<String> {
         let mut final_result: Option<String> = None;
         let mut jump_cmd = false;
 
@@ -45,7 +45,7 @@ impl CommandHandler {
                     cmd,
                     input.clone(),
                 );
-                (current_dir, result, cmd_succes) = runner.test();
+                (current_dir, result, cmd_succes) = runner.test().await;
                 self.current_dir = current_dir; //cd 
             }
             let sliced_cmds: Vec<Command> = self.cmds[i..].to_vec();
@@ -82,9 +82,9 @@ impl CommandHandler {
         final_result
     }
 
-    pub fn get_output(&mut self) -> (String, PathBuf) {
+    pub async fn get_output(&mut self) -> (String, PathBuf) {
         //dbg!(&self.cmds);
-        let output = self.run_commands().unwrap_or("12".to_string());
+        let output = self.run_commands().await.unwrap_or("".to_string());
 
         let current_dir = match self.current_dir.strip_prefix(&self.root) {
             Ok(path) => path,

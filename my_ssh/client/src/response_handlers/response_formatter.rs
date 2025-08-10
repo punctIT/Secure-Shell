@@ -7,6 +7,7 @@ pub struct ShowResponse {
 fn get_color(color: &str) -> colored::Color {
     match color {
         "^!" => Color::Blue,
+        "^#" => Color::Green,
         _ => Color::White,
     }
 }

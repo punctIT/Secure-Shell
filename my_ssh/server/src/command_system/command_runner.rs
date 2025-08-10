@@ -1,6 +1,7 @@
 use crate::command_system::commands::change_directory::ChangeDIR;
 use crate::command_system::commands::concatenate::Cat;
 use crate::command_system::commands::echo::Echo;
+use crate::command_system::commands::executable_files::Execute;
 use crate::command_system::commands::global_regular_expresion_print::Grep;
 use crate::command_system::commands::word_count::WordCount;
 use crate::command_system::common::Format;
@@ -55,7 +56,7 @@ impl RunCommand {
             input,
         }
     }
-    pub fn test(&mut self) -> (PathBuf, Option<String>, bool) {
+    pub async fn test(&mut self) -> (PathBuf, Option<String>, bool) {
         let command = Commands::from_str(&self.command.cmd[0]);
         let (output, succes) = match command {
             Commands::ChangeDirectory => {
@@ -117,14 +118,20 @@ impl RunCommand {
                 }
             }
             Commands::Unknown(cmd) => {
-                let new_succes = false;
-                let new_output = Some(format!(
-                    "{}Error , Command {} not found {}",
-                    get_format(Format::Error),
-                    cmd,
-                    get_format(Format::Split)
-                ));
-                (new_output, new_succes)
+                if cmd.starts_with("./") {
+                    let exe = Execute::new(self.command.clone(), self.path.clone());
+                    let (new_output, new_succes) = exe.get_output().await;
+                    (Some(new_output), new_succes)
+                } else {
+                    let new_succes = false;
+                    let new_output = Some(format!(
+                        "{}Error , Command {} not found {}",
+                        get_format(Format::Error),
+                        cmd,
+                        get_format(Format::Split)
+                    ));
+                    (new_output, new_succes)
+                }
             }
         };
 
