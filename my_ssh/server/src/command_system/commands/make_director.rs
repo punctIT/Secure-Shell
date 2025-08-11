@@ -24,9 +24,8 @@ impl MakeDir {
                 succes = false;
                 line_output = format!("mkdir: cannot create directory `{}`: File exists", cmd);
             } else if let Err(e) = fs::create_dir_all(new_path) {
-                    line_output = format!("Error{}:", e);
-                    succes = false;
-                
+                line_output = format!("Error{}:", e);
+                succes = false;
             }
             if !line_output.is_empty() {
                 if output.is_empty() {

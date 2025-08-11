@@ -22,15 +22,16 @@ impl RmDir {
             let new_path = self.current_dir.join(cmd);
             if !new_path.exists() {
                 succes = false;
-                line_output = format!("rmdir: failed to remove '{}': No such file or directory", cmd);
-            } else if new_path.is_file(){
+                line_output = format!(
+                    "rmdir: failed to remove '{}': No such file or directory",
+                    cmd
+                );
+            } else if new_path.is_file() {
                 succes = false;
                 line_output = format!("r rmdir: failed to remove '{}': Not a directory", cmd);
-            }
-            else if let Err(e) = fs::remove_dir(new_path) {
+            } else if let Err(e) = fs::remove_dir(new_path) {
                 line_output = format!("Error:{}", e);
                 succes = false;
-                
             }
             if !line_output.is_empty() {
                 if output.is_empty() {
