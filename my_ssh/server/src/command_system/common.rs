@@ -1,3 +1,4 @@
+use shell_words::split;
 use std::path::PathBuf;
 
 #[derive(Clone, Debug)]
@@ -16,6 +17,37 @@ pub fn get_files(path: &std::path::Path) -> Result<Vec<PathBuf>, std::io::Error>
         files.push(file_path.clone());
     }
     Ok(files)
+}
+pub fn get_commands(client_input: String) -> Vec<Command> {
+    let mut cmds: Vec<Command> = Vec::new();
+    let op = ["&&", "|", "||", "<", ">", ";"];
+
+    let parsed = match split(client_input.trim()) {
+        Ok(v) => v,
+        Err(_) => return cmds,
+    };
+
+    let mut current_cmd: Vec<String> = Vec::new();
+    for token in parsed {
+        if op.contains(&token.as_str()) {
+            cmds.push(Command {
+                cmd: current_cmd.clone(),
+                op: Some(token),
+            });
+            current_cmd.clear();
+        } else {
+            current_cmd.push(token);
+        }
+    }
+
+    if !current_cmd.is_empty() {
+        cmds.push(Command {
+            cmd: current_cmd,
+            op: None,
+        });
+    }
+
+    cmds
 }
 
 pub enum Format {

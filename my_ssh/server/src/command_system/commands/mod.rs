@@ -6,6 +6,6 @@ pub mod global_regular_expresion_print;
 pub mod list_files;
 pub mod make_director;
 pub mod move_class;
-pub mod word_count;
 pub mod remove_director;
 pub mod remove_file;
+pub mod word_count;

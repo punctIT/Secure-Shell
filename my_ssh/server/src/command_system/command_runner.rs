@@ -4,8 +4,8 @@ use crate::command_system::commands::echo::Echo;
 use crate::command_system::commands::executable_files::Execute;
 use crate::command_system::commands::global_regular_expresion_print::Grep;
 use crate::command_system::commands::make_director::MakeDir;
-use crate::command_system::commands::remove_director::RmDir;
 use crate::command_system::commands::move_class::MoveFileAndDir;
+use crate::command_system::commands::remove_director::RmDir;
 use crate::command_system::commands::remove_file::RemoveFile;
 use crate::command_system::commands::word_count::WordCount;
 use crate::command_system::common::Format;
@@ -47,8 +47,8 @@ impl Commands {
             "grep" => Commands::Grep,
             "mv" => Commands::MoveFileAndDir,
             "mkdir" => Commands::MakeDir,
-            "rm"=>Commands::Remove,
-            "rmdir"=>Commands::RemoveDir,
+            "rm" => Commands::Remove,
+            "rmdir" => Commands::RemoveDir,
             other => Commands::Unknown(other.to_string()),
         }
     }
@@ -125,12 +125,12 @@ impl RunCommand {
                 let (new_output, new_succes) = mkdir.get_output();
                 (Some(new_output), new_succes)
             }
-            Commands::RemoveDir=>{
+            Commands::RemoveDir => {
                 let rmdir = RmDir::new(self.command.clone(), self.path.clone());
                 let (new_output, new_succes) = rmdir.get_output();
                 (Some(new_output), new_succes)
             }
-            Commands::Remove=>{
+            Commands::Remove => {
                 let rm = RemoveFile::new(self.command.clone(), self.path.clone());
                 let (new_output, new_succes) = rm.get_output();
                 (Some(new_output), new_succes)

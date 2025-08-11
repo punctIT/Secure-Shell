@@ -1,4 +1,5 @@
 mod command_system;
+mod login;
 mod secure_shell_server;
 use secure_shell_server::SecureShellServer;
 
@@ -9,6 +10,7 @@ async fn main() {
         "certificate/key.pem",
         "127.0.0.1:12345",
         "C:\\Users\\teodo\\Desktop",
+        "C:\\Users\\teodo\\Desktop\\passwords.txt",
     );
     server
         .bind_and_listen()

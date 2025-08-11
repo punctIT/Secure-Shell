@@ -9,7 +9,7 @@ pub struct RemoveFile {
 
 impl RemoveFile {
     pub fn new(cmd: Command, path: std::path::PathBuf) -> Self {
-         RemoveFile {
+        RemoveFile {
             command: cmd,
             current_dir: path,
         }
@@ -23,14 +23,12 @@ impl RemoveFile {
             if !new_path.exists() {
                 succes = false;
                 line_output = format!("rm: failed to remove '{}': No such file or directory", cmd);
-            } else if new_path.is_dir(){
+            } else if new_path.is_dir() {
                 succes = false;
                 line_output = format!("rmdir: failed to remove '{}': Not a file", cmd);
-            }
-            else if let Err(e) = fs::remove_file(new_path) {
+            } else if let Err(e) = fs::remove_file(new_path) {
                 line_output = format!("Error:{}", e);
                 succes = false;
-                
             }
             if !line_output.is_empty() {
                 if output.is_empty() {

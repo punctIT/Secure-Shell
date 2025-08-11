@@ -1,7 +1,7 @@
 use crate::command_system::command_runner::RunCommand;
 use crate::command_system::common::Command;
+use crate::command_system::common::get_commands;
 use crate::command_system::operation_handler::OperationHandler;
-use shell_words::split;
 use std::path::PathBuf;
 
 pub struct CommandHandler {
@@ -12,7 +12,7 @@ pub struct CommandHandler {
 impl CommandHandler {
     pub fn new(client_input: String, path: PathBuf, current_dir: PathBuf) -> Self {
         CommandHandler {
-            cmds: Self::get_commands(client_input),
+            cmds: get_commands(client_input),
             root: std::fs::canonicalize(&path).unwrap_or(path),
             current_dir: std::fs::canonicalize(&current_dir).unwrap_or(current_dir),
         }
@@ -102,37 +102,5 @@ impl CommandHandler {
         let reply = format!("{}[-]:{}[-]\r\n\r\n", output, current_dir.display());
         //dbg!(&reply);
         (reply, self.current_dir.clone())
-    }
-
-    fn get_commands(client_input: String) -> Vec<Command> {
-        let mut cmds: Vec<Command> = Vec::new();
-        let op = ["&&", "|", "||", "<", ">", ";"];
-
-        let parsed = match split(client_input.trim()) {
-            Ok(v) => v,
-            Err(_) => return cmds,
-        };
-
-        let mut current_cmd: Vec<String> = Vec::new();
-        for token in parsed {
-            if op.contains(&token.as_str()) {
-                cmds.push(Command {
-                    cmd: current_cmd.clone(),
-                    op: Some(token),
-                });
-                current_cmd.clear();
-            } else {
-                current_cmd.push(token);
-            }
-        }
-
-        if !current_cmd.is_empty() {
-            cmds.push(Command {
-                cmd: current_cmd,
-                op: None,
-            });
-        }
-
-        cmds
     }
 }
