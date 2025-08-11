@@ -33,10 +33,16 @@ impl CommandHandler {
         for (i, cmd) in self.cmds.clone().iter().enumerate() {
             let op = cmd.op.clone().unwrap_or("".to_string());
             if op == "<" {
+                if self.cmds[i].cmd.is_empty() {
+                    return None;
+                }
                 input = Some(
                     std::fs::read_to_string(self.current_dir.join(&self.cmds[i + 1].cmd[0]))
                         .unwrap_or("".to_string()),
                 );
+            }
+            if op == ">" && self.cmds[i].cmd.is_empty() {
+                return None;
             }
             if !jump_cmd {
                 let mut runner = RunCommand::new(
