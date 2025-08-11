@@ -53,10 +53,22 @@ impl Client {
 
         Ok(())
     }
+    fn clear_console() {
+        if cfg!(target_os = "windows") {
+            std::process::Command::new("cmd")
+                .args(["/C", "cls"])
+                .status()
+                .unwrap();
+        } else {
+            std::process::Command::new("clear").status().unwrap();
+        }
+    }
     pub async fn send_and_receive(&mut self) -> Result<(), Box<dyn std::error::Error>> {
         let tls_stream = self.tls_stream.as_mut().unwrap_or_else(|| {
             panic!("Error TLS not configured");
         });
+
+        let mut last_path = String::new();
 
         let mut buf = vec![0u8; 1024];
         let n = tls_stream.read(&mut buf).await?;
@@ -66,16 +78,25 @@ impl Client {
         let resonse = ShowResponse::new(r[0].to_string());
         resonse.show();
         print!("{}{}>", "Server".cyan(), r[1].cyan());
+        last_path += r[1];
         std::io::stdout().flush().unwrap();
 
         loop {
-            let mut mesaj = String::new();
-            std::io::stdin().read_line(&mut mesaj).expect("Read Error");
-            if mesaj.trim() == "exit" {
+            let mut message = String::new();
+            std::io::stdin()
+                .read_line(&mut message)
+                .expect("Read Error");
+            if message.trim() == "exit" {
                 tls_stream.shutdown().await?;
                 return Ok(());
             }
-            tls_stream.write_all(mesaj.as_bytes()).await?;
+            if message.trim() == "clear" || message.trim() == "cls" {
+                Client::clear_console();
+                print!("{}{}>", "Server".cyan(), last_path.cyan());
+                std::io::stdout().flush().unwrap();
+                continue;
+            }
+            tls_stream.write_all(message.as_bytes()).await?;
 
             let mut buffer = Vec::new();
             let mut temp_buf = vec![0u8; 1024];
@@ -97,6 +118,7 @@ impl Client {
             let resonse = ShowResponse::new(r[0].to_string());
             resonse.show();
             print!("{}{}>", "Server".cyan(), r[1].cyan());
+            last_path = r[1].to_string();
             std::io::stdout().flush().unwrap();
         }
     }

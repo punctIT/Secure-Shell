@@ -1,0 +1,89 @@
+[33mcommit 5adfcfbf462ae8ede2173b93d322e474a486134e[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m
+Author: punctIT <teodorivan2005@gmail.com>
+Date:   Mon Aug 11 00:10:36 2025 +0300
+
+    execute class , bug async starving fix,
+
+[33mcommit e29af6ff82bcabd84be1e4c487939722302adfd9[m
+Author: punctIT <teodorivan2005@gmail.com>
+Date:   Sun Aug 10 01:32:51 2025 +0300
+
+    bug fix, cat, grep redirect , client limited text
+
+[33mcommit a75fe7777c492863270b078527c9ee1b7abf44e3[m
+Author: punctIT <teodorivan2005@gmail.com>
+Date:   Sun Aug 10 00:38:46 2025 +0300
+
+    grep + ...
+
+[33mcommit f12fd32152494cf31c6e39b3c3b8c8e3fdc34f7b[m
+Author: punctIT <teodorivan2005@gmail.com>
+Date:   Fri Aug 8 22:23:55 2025 +0300
+
+    cat, some bugs fixed, exit in client
+
+[33mcommit ec2cdfb1e2ed85163c8b379f1117aacfe361990b[m
+Author: punctIT <teodorivan2005@gmail.com>
+Date:   Fri Aug 8 01:21:18 2025 +0300
+
+    wc , cargo fmt , cargo clippy, + some bugs fix
+
+[33mcommit 31728baf4ce7e869d47fd122b586f9968f51671f[m
+Author: punctIT <teodorivan2005@gmail.com>
+Date:   Thu Aug 7 01:19:54 2025 +0300
+
+    echo , || op , | op
+
+[33mcommit 07370fb1a24dc80530250f8b752f6de2821fed98[m
+Author: punctIT <teodorivan2005@gmail.com>
+Date:   Wed Aug 6 20:51:29 2025 +0300
+
+    && operator
+
+[33mcommit 6f4aff650c70dc42be4346e6baf69819bddf9f24[m
+Author: punctIT <teodorivan2005@gmail.com>
+Date:   Tue Aug 5 23:42:24 2025 +0300
+
+    cargo clippy , cargo fmt
+
+[33mcommit 00ef47f19c8890c579fe7b60a697f030225f0236[m
+Author: punctIT <teodorivan2005@gmail.com>
+Date:   Tue Aug 5 23:08:33 2025 +0300
+
+    cd , ls ,
+
+[33mcommit 3e4831b115b28c593b2b49b27324490130ddc7bb[m
+Author: punctIT <teodorivan2005@gmail.com>
+Date:   Mon Aug 4 19:12:49 2025 +0300
+
+     ; - op      , some formatiing
+
+[33mcommit 9a351d7ffeb8504c6757fe27c4c01d9d834d6436[m
+Author: punctIT <teodorivan2005@gmail.com>
+Date:   Sat Aug 2 20:26:43 2025 +0300
+
+    ls command
+
+[33mcommit fac275e949d8653216d51a3ace280fd763e83026[m
+Author: punctIT <teodorivan2005@gmail.com>
+Date:   Fri Aug 1 23:32:39 2025 +0300
+
+    some command_handeler
+
+[33mcommit e32b5ca2d614be2e95caff11dd48b46e61ac848f[m
+Author: punctIT <teodorivan2005@gmail.com>
+Date:   Fri Aug 1 00:59:13 2025 +0300
+
+    server/client
+
+[33mcommit 09a99bb6829c9a231a19980d92454173e4a7d496[m
+Author: punctIT <teodorivan2005@gmail.com>
+Date:   Thu Jul 31 18:05:42 2025 +0300
+
+    First Commit
+
+[33mcommit 76efc712ae34ba75aa852df8b786382d2250cb11[m
+Author: Ivaniciuc Teodor-Arsenie <89927154+punctIT@users.noreply.github.com>
+Date:   Thu Jul 31 18:02:46 2025 +0300
+
+    Initial commit
