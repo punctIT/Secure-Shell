@@ -113,7 +113,7 @@ openssl req -x509 -newkey rsa:4096 -keyout server.key -out server.crt -days 365 
 
 ### 🖧 [Server Documentation](./my_ssh/server/README.MD)
 
-### 🖥️ [Client Documentation](./my_ssh/client/README.md)
+### 🖥️ [Client Documentation](./my_ssh/client/README.MD)
 
 ## 🎓 Educational Goals
 
@@ -137,3 +137,4 @@ This project serves as a comprehensive learning resource for:
 **Version**: 1.0.0  
 
 **Last Updated**: August 12, 2025
+
