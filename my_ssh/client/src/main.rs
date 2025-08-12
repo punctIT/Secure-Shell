@@ -1,10 +1,17 @@
 mod client;
+mod client_configure;
 mod response_handlers;
 use client::Client;
 
 #[tokio::main]
 async fn main() {
-    let mut client = Client::new("certificate/cert.pem", "localhost", "192.168.100.237:12345");
+    let client_cfg = client_configure::Configure::new();
+
+    let mut client = Client::new(
+        &client_cfg.set_cert_path(),
+        "localhost",
+        &client_cfg.set_ip_path(),
+    );
 
     if let Err(e) = client.connect_to_server().await {
         eprintln!("Error At Connect: {:?}", e);

@@ -1,16 +1,19 @@
 mod command_system;
 mod login;
 mod secure_shell_server;
+mod server_configure;
 use secure_shell_server::SecureShellServer;
 
 #[tokio::main]
 async fn main() {
+    let server_config = server_configure::Configure::new();
+
     let mut server = SecureShellServer::new(
-        "certificate/cert.pem",
-        "certificate/key.pem",
+        &server_config.set_cert_path(),
+        &server_config.set_cert_key_path(),
         "0.0.0.0:12345",
-        "C:\\Users\\teodo\\Desktop",
-        "C:\\Users\\teodo\\Desktop\\passwords.txt",
+        &server_config.set_working_direcotry(),
+        &server_config.set_password_file(),
     );
     server
         .bind_and_listen()
