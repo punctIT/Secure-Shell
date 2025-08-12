@@ -51,15 +51,14 @@ impl SecureShellServer {
         self.acceptor = Some(TlsAcceptor::from(Arc::new(config)));
 
         self.listener = Some(TcpListener::bind(self.ip_port.clone()).await?);
-        println!("Server TLS ascultă la {}", self.ip_port);
+        println!("Server TLS listener at {}", self.ip_port);
 
         Ok(())
     }
     pub async fn accept_wait(&mut self) -> Result<(), Box<dyn std::error::Error>> {
         let listener = self
             .listener
-            .as_mut()
-            .unwrap_or_else(|| panic!("error , TcpListener not binded"));
+            .as_mut().unwrap_or_else(|| panic!("error , acceptor not configured"));
         let acceptor = self
             .acceptor
             .as_mut()
