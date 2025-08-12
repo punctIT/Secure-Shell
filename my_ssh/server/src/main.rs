@@ -12,7 +12,7 @@ async fn main() {
         &server_config.set_cert_path(),
         &server_config.set_cert_key_path(),
         "0.0.0.0:12345",
-        &server_config.set_working_direcotry(),
+        &server_config.set_working_directory(),
         &server_config.set_password_file(),
     );
     server

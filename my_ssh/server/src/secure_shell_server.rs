@@ -9,6 +9,26 @@ use tokio_rustls::{
     rustls::{Certificate, PrivateKey, ServerConfig},
 };
 
+/// A secure shell server implementation using TLS encryption.
+///
+/// `SecureShellServer` provides a TLS-encrypted remote shell service that allows
+/// authenticated users to execute commands in a secure environment. The server
+/// handles SSL/TLS certificate management, user authentication, and command processing.
+///
+/// # Examples
+///
+/// ```rust
+/// let mut server = SecureShellServer::new(
+///     "/path/to/cert.pem",
+///     "/path/to/key.pem",
+///     "127.0.0.1:8443",
+///     "/home/secure",
+///     "/etc/passwords.txt"
+/// );
+///
+/// server.bind_and_listen().await?;
+/// server.accept_wait().await?;
+/// ```
 pub struct SecureShellServer {
     certs: Vec<Certificate>,
     key: PrivateKey,
@@ -21,6 +41,37 @@ pub struct SecureShellServer {
 }
 
 impl SecureShellServer {
+    /// Creates a new `SecureShellServer` instance with the specified configuration.
+    ///
+    /// # Parameters
+    ///
+    /// - `cert_path`: Path to the TLS certificate file (PEM format)
+    /// - `key_path`: Path to the private key file (PEM format)
+    /// - `ip_port`: IP address and port to bind to (e.g., "127.0.0.1:8443")
+    /// - `root`: Root directory path for user operations (sandboxing)
+    /// - `password_path`: Path to the password file for authentication
+    ///
+    /// # Returns
+    ///
+    /// A new `SecureShellServer` instance ready for binding and listening.
+    ///
+    /// # Panics
+    ///
+    /// Panics if:
+    /// - Certificate file cannot be loaded or is invalid
+    /// - Private key file cannot be loaded or is invalid
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// let server = SecureShellServer::new(
+    ///     "/etc/ssl/certs/server.pem",
+    ///     "/etc/ssl/private/server.key",
+    ///     "0.0.0.0:8443",
+    ///     "/home/secure_shell",
+    ///     "/etc/secure_shell/passwords"
+    /// );
+    /// ```
     pub fn new(
         cert_path: &str,
         key_path: &str,
@@ -43,6 +94,32 @@ impl SecureShellServer {
             users: Arc::new(RwLock::new(Vec::new())),
         }
     }
+    /// Binds the server to the specified IP and port and prepares it for accepting connections.
+    ///
+    /// This method sets up the TLS configuration using the loaded certificates and private key,
+    /// creates a TCP listener, and prepares the TLS acceptor for handling incoming connections.
+    ///
+    /// # Returns
+    ///
+    /// - `Ok(())` if the server is successfully bound and configured
+    /// - `Err(Box<dyn std::error::Error>)` if binding fails or TLS configuration is invalid
+    ///
+    /// # Errors
+    ///
+    /// This method can fail if:
+    /// - The IP address and port are already in use
+    /// - Invalid TLS certificate or private key
+    /// - Network interface is not available
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// let mut server = SecureShellServer::new(/* ... */);
+    /// match server.bind_and_listen().await {
+    ///     Ok(()) => println!("Server bound successfully"),
+    ///     Err(e) => eprintln!("Failed to bind server: {}", e),
+    /// }
+    /// ```
     pub async fn bind_and_listen(&mut self) -> Result<(), Box<dyn std::error::Error>> {
         let config = ServerConfig::builder()
             .with_safe_defaults()
@@ -55,10 +132,50 @@ impl SecureShellServer {
 
         Ok(())
     }
+        /// Accepts and handles incoming client connections in an infinite loop.
+    /// 
+    /// This method continuously accepts new TCP connections, performs TLS handshakes,
+    /// and spawns separate async tasks to handle each client session. Each client
+    /// session includes authentication and command processing capabilities.
+    /// 
+    /// # Returns
+    /// 
+    /// - `Ok(())` - This method runs indefinitely and should not return under normal operation
+    /// - `Err(Box<dyn std::error::Error>)` if a critical server error occurs
+    /// 
+    /// # Panics
+    /// 
+    /// Panics if `bind_and_listen()` has not been called first, as the listener
+    /// and acceptor must be configured before accepting connections.
+    /// 
+    /// # Client Session Flow
+    /// 
+    /// 1. Accept TCP connection and perform TLS handshake
+    /// 2. Send welcome message to client
+    /// 3. Wait for login command with username and password
+    /// 4. Authenticate user against password file
+    /// 5. Process commands for authenticated users
+    /// 6. Clean up user session on disconnect
+    /// 
+    /// # Examples
+    /// 
+    /// ```rust
+    /// let mut server = SecureShellServer::new(/* ... */);
+    /// server.bind_and_listen().await?;
+    /// 
+    /// // This will run indefinitely, handling client connections
+    /// server.accept_wait().await?;
+    /// ```
+    /// 
+    /// # Note
+    /// 
+    /// Each client connection is handled in a separate async task, allowing
+    /// concurrent sessions from multiple users.
     pub async fn accept_wait(&mut self) -> Result<(), Box<dyn std::error::Error>> {
         let listener = self
             .listener
-            .as_mut().unwrap_or_else(|| panic!("error , acceptor not configured"));
+            .as_mut()
+            .unwrap_or_else(|| panic!("error , acceptor not configured"));
         let acceptor = self
             .acceptor
             .as_mut()
