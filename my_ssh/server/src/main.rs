@@ -8,7 +8,7 @@ async fn main() {
     let mut server = SecureShellServer::new(
         "certificate/cert.pem",
         "certificate/key.pem",
-        "127.0.0.1:12345",
+        "0.0.0.0:12345",
         "C:\\Users\\teodo\\Desktop",
         "C:\\Users\\teodo\\Desktop\\passwords.txt",
     );

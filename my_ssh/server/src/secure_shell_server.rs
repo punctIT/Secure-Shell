@@ -95,7 +95,6 @@ impl SecureShellServer {
                     match tls_stream.read(&mut buf).await {
                         Ok(0) => {
                             println!("client disconnected {}", addr);
-                            let mut vec_lock = users.write().await;
                             if user.is_some() {
                                 let mut vec_lock = users.write().await;
                                 vec_lock.retain(|u| u != user.as_ref().unwrap());
