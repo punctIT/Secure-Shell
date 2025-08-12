@@ -3,18 +3,26 @@ use crate::command_system::common::Command;
 use crate::command_system::common::get_commands;
 use crate::command_system::operation_handler::OperationHandler;
 use std::path::PathBuf;
-
+use std::sync::Arc;
+use tokio::sync::RwLock;
 pub struct CommandHandler {
     cmds: Vec<Command>,
     root: PathBuf,
     current_dir: PathBuf,
+    users_list: Arc<RwLock<Vec<String>>>,
 }
 impl CommandHandler {
-    pub fn new(client_input: String, path: PathBuf, current_dir: PathBuf) -> Self {
+    pub fn new(
+        client_input: String,
+        path: PathBuf,
+        current_dir: PathBuf,
+        users: Arc<RwLock<Vec<String>>>,
+    ) -> Self {
         CommandHandler {
             cmds: get_commands(client_input),
             root: std::fs::canonicalize(&path).unwrap_or(path),
             current_dir: std::fs::canonicalize(&current_dir).unwrap_or(current_dir),
+            users_list: users,
         }
     }
     async fn run_commands(&mut self) -> Option<String> {
@@ -50,6 +58,7 @@ impl CommandHandler {
                     self.root.clone(),
                     cmd,
                     input.clone(),
+                    self.users_list.clone(),
                 );
                 (current_dir, result, cmd_succes) = runner.test().await;
                 self.current_dir = current_dir; //cd 

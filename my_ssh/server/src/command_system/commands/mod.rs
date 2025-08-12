@@ -8,4 +8,5 @@ pub mod make_director;
 pub mod move_class;
 pub mod remove_director;
 pub mod remove_file;
+pub mod users;
 pub mod word_count;
