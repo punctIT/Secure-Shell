@@ -160,7 +160,9 @@ impl SecureShellServer {
                         Err(e) => {
                             eprintln!("Read Error: {:?}", e);
                             let mut vec_lock = users.write().await;
-                            vec_lock.retain(|u| u != &user.clone().unwrap_or(String::from("")));
+                            if let Some(ref username) = user {
+                                vec_lock.retain(|u| u != username);
+                            }
                             break;
                         }
                     }
