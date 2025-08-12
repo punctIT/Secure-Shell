@@ -43,9 +43,7 @@ impl Client {
 
         let connector = TlsConnector::from(Arc::new(config));
 
-        let stream = TcpStream::connect(self.ip_port.clone())
-            .await
-            .unwrap_or_else(|e| panic!("Error , {e}"));
+        let stream = TcpStream::connect(self.ip_port.clone()).await?;
 
         let server_name = self.server_name.clone();
 
