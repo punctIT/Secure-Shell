@@ -7,6 +7,7 @@ use crate::command_system::commands::make_director::MakeDir;
 use crate::command_system::commands::move_class::MoveFileAndDir;
 use crate::command_system::commands::remove_director::RmDir;
 use crate::command_system::commands::remove_file::RemoveFile;
+use crate::command_system::commands::users::ListUsers;
 use crate::command_system::commands::word_count::WordCount;
 use crate::command_system::common::Format;
 use crate::command_system::{
@@ -14,11 +15,15 @@ use crate::command_system::{
     common::{Command, get_format},
 };
 use std::path::PathBuf;
+use std::sync::Arc;
+use tokio::sync::RwLock;
+
 pub struct RunCommand {
     path: std::path::PathBuf,
     command: Command,
     input: Option<String>,
     root: std::path::PathBuf,
+    users_list: Arc<RwLock<Vec<String>>>,
 }
 enum Commands {
     ChangeDirectory,
@@ -32,6 +37,7 @@ enum Commands {
     RemoveDir,
     WordCount,
     Remove,
+    Users,
     Unknown(String),
 }
 
@@ -49,6 +55,7 @@ impl Commands {
             "mkdir" => Commands::MakeDir,
             "rm" => Commands::Remove,
             "rmdir" => Commands::RemoveDir,
+            "who" | "users" => Commands::Users,
             other => Commands::Unknown(other.to_string()),
         }
     }
@@ -60,12 +67,14 @@ impl RunCommand {
         root: PathBuf,
         command: &Command,
         input: Option<String>,
+        users: Arc<RwLock<Vec<String>>>,
     ) -> Self {
         Self {
             path: current_path,
             root,
             command: command.clone(),
             input,
+            users_list: users,
         }
     }
     pub async fn test(&mut self) -> (PathBuf, Option<String>, bool) {
@@ -101,6 +110,11 @@ impl RunCommand {
             Commands::Grep => {
                 let grep = Grep::new(self.command.clone(), self.input.clone(), self.path.clone());
                 let (new_output, new_succes) = grep.get_output();
+                (Some(new_output), new_succes)
+            }
+            Commands::Users => {
+                let who = ListUsers::new(self.command.clone(), self.users_list.clone());
+                let (new_output, new_succes) = who.get_output().await;
                 (Some(new_output), new_succes)
             }
             Commands::PrintWorkingDirectory => {

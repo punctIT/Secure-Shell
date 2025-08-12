@@ -1,16 +1,19 @@
-use std::collections::HashMap;
-
 use crate::command_system::common::get_commands;
 use bcrypt::verify;
+use std::collections::HashMap;
+use std::sync::Arc;
+use tokio::sync::RwLock;
 pub struct UserLogin {
     input: String,
     passwords_path: std::path::PathBuf,
+    users_list: Arc<RwLock<Vec<String>>>,
 }
 impl UserLogin {
-    pub fn new(input: String, path: std::path::PathBuf) -> Self {
+    pub fn new(input: String, path: std::path::PathBuf, users: Arc<RwLock<Vec<String>>>) -> Self {
         UserLogin {
             input,
             passwords_path: path,
+            users_list: users,
         }
     }
     fn get_hashmap_password(&self) -> HashMap<String, String> {
@@ -30,7 +33,7 @@ impl UserLogin {
         }
         hashmap
     }
-    pub fn get_login_status(&self) -> Result<String, String> {
+    pub async fn get_login_status(&self) -> Result<String, String> {
         let cmd = get_commands(self.input.clone());
         let pass_map = self.get_hashmap_password();
         if cmd[0].cmd[0] == "login" {
@@ -39,9 +42,21 @@ impl UserLogin {
                 if let Some(stored_hash) = pass_map.get(&username) {
                     let password = cmd[0].cmd[2].clone();
                     if verify(password, stored_hash).unwrap_or(false) {
-                        Ok(username)
+                        let users_lock = self.users_list.read().await;
+                        let user_exists = users_lock
+                            .iter()
+                            .any(|user_entry| user_entry.contains(&username));
+
+                        if user_exists {
+                            Err(format!(
+                                "{}[-]:{}[-]\r\n\r\n",
+                                "?&EUser already logged in", ""
+                            ))
+                        } else {
+                            Ok(username)
+                        }
                     } else {
-                        Err(format!("{}[-]:{}[-]\r\n\r\n", "?&EIncorect password", ""))
+                        Err(format!("{}[-]:{}[-]\r\n\r\n", "?&EIncorrect password", ""))
                     }
                 } else {
                     Err(format!("{}[-]:{}[-]\r\n\r\n", "?&EInvalid username", ""))

@@ -70,7 +70,7 @@ impl SecureShellServer {
             let acceptor = acceptor.clone();
             let root_path = self.root_path.clone();
             let users = self.users.clone();
-            let mut user: Option<String> = None;
+
             let password_path = self.password_path.clone();
             tokio::spawn(async move {
                 let mut tls_stream = match acceptor.accept(stream).await {
@@ -83,32 +83,44 @@ impl SecureShellServer {
                 println!("Client TLS :connected {}", addr);
 
                 if let Err(e) = tls_stream
-                    .write_all("?&NWelcome\nThis is a secure shell[-]".as_bytes())
+                    .write_all("?&NWelcome\nThis is a secure shell , use >: login [USERNAME] [PASSWORD][-]".as_bytes())
                     .await
                 {
                     eprintln!("Write Error: {:?}", e);
                 }
                 let mut server_path = root_path.clone();
+                let mut user: Option<String> = None;
                 let mut buf = vec![0u8; 1024];
                 loop {
                     match tls_stream.read(&mut buf).await {
                         Ok(0) => {
-                            println!("client disconected {}", addr);
+                            println!("client disconnected {}", addr);
+                            let mut vec_lock = users.write().await;
+                            if user.is_some() {
+                                let mut vec_lock = users.write().await;
+                                vec_lock.retain(|u| u != user.as_ref().unwrap());
+                            }
                             break;
                         }
                         Ok(n) => {
                             let received = String::from_utf8_lossy(&buf[..n]);
-                            println!("{} sent: {}", addr, received.trim());
-                            if received.trim() == "stop" {
-                                std::process::exit(1);
-                            }
+                            println!(
+                                "{}:{} sent: {}",
+                                user.clone().unwrap_or(String::from("")),
+                                addr,
+                                received.trim()
+                            );
                             if user.is_none() {
-                                let login =
-                                    UserLogin::new(received.to_string(), password_path.clone());
-                                match login.get_login_status() {
+                                let login = UserLogin::new(
+                                    received.to_string(),
+                                    password_path.clone(),
+                                    users.clone(),
+                                );
+                                match login.get_login_status().await {
                                     Ok(user_name) => {
+                                        dbg!("login succesful");
                                         let mut vec_lock = users.write().await;
-                                        vec_lock.push(format!("Client conectat: {}", user_name));
+                                        vec_lock.push(user_name.clone());
                                         user = Some(user_name);
                                         if let Err(err) = tls_stream
                                             .write_all(
@@ -135,6 +147,7 @@ impl SecureShellServer {
                                     received.to_string(),
                                     root_path.clone(),
                                     server_path.clone(),
+                                    users.clone(),
                                 );
                                 let (reply, new_server_path) = command_handler.get_output().await;
                                 server_path = new_server_path;
@@ -146,6 +159,10 @@ impl SecureShellServer {
                         }
                         Err(e) => {
                             eprintln!("Read Error: {:?}", e);
+                            let mut vec_lock = users.write().await;
+                            if let Some(ref username) = user {
+                                vec_lock.retain(|u| u != username);
+                            }
                             break;
                         }
                     }
