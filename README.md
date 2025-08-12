@@ -111,7 +111,7 @@ openssl req -x509 -newkey rsa:4096 -keyout server.key -out server.crt -days 365 
 
 ## 📚 Documentation
 
-### 🖧 [Server Documentation](./my_ssh/server/README.md)
+### 🖧 [Server Documentation](./my_ssh/server/README.MD)
 
 ### 🖥️ [Client Documentation](./my_ssh/client/README.md)
 
@@ -135,4 +135,5 @@ This project serves as a comprehensive learning resource for:
 
 **Author**: punctIT  
 **Version**: 1.0.0  
+
 **Last Updated**: August 12, 2025
