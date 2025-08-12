@@ -10,7 +10,6 @@ Complete documentation for the Secure Shell Client implementation in Rust.
 - [Configuration](#configuration)
 - [Usage](#usage)
 - [Features](#features)
-- [API Reference](#api-reference)
 
 ## 🎯 Overview
 

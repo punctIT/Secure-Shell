@@ -1,7 +1,7 @@
 pub struct Configure {}
 impl Configure {
     pub fn new() -> Self {
-       Configure {}
+        Configure {}
     }
 
     pub fn set_cert_path(&self) -> String {
