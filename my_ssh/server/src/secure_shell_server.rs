@@ -83,7 +83,7 @@ impl SecureShellServer {
                 println!("Client TLS :connected {}", addr);
 
                 if let Err(e) = tls_stream
-                    .write_all("?&NWelcome\nThis is a secure shell[-]".as_bytes())
+                    .write_all("?&NWelcome\nThis is a secure shell , use >: login [USERNAME] [PASSWORD][-]".as_bytes())
                     .await
                 {
                     eprintln!("Write Error: {:?}", e);
@@ -101,10 +101,12 @@ impl SecureShellServer {
                         }
                         Ok(n) => {
                             let received = String::from_utf8_lossy(&buf[..n]);
-                            println!("{}:{} sent: {}", user.clone().unwrap_or(String::from("")),addr, received.trim());
-                            if received.trim() == "stop" {
-                                std::process::exit(1);
-                            }
+                            println!(
+                                "{}:{} sent: {}",
+                                user.clone().unwrap_or(String::from("")),
+                                addr,
+                                received.trim()
+                            );
                             if user.is_none() {
                                 let login = UserLogin::new(
                                     received.to_string(),
