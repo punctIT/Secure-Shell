@@ -1,7 +1,7 @@
 pub struct Configure {}
 impl Configure {
     pub fn new() -> Self {
-        return Configure {};
+        Configure{}
     }
     pub fn set_cert_key_path(&self) -> String {
         let mut input = String::new();
