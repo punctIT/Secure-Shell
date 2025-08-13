@@ -7,13 +7,14 @@ class Window(QWidget):
     def __init__(self):
         super().__init__()
         self.client=TlsClient()
-
+        self.setAutoFillBackground(True)
         self.setWindowTitle("Secure Shell")
         self.main_layout = QVBoxLayout()
         self.current_widget = None
         self.show_connect_window()
 
         self.setLayout(self.main_layout)
+
 
     def clear_and_add_widget(self, new_widget):
         if self.current_widget:
