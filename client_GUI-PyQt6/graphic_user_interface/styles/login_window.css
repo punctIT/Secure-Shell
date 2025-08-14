@@ -1,0 +1,79 @@
+
+QLineEdit {
+    padding: 5px 10px;
+    font-size: 16px;
+    border: 2px solid;
+    border-radius: 8px;
+}
+
+
+QLineEdit::placeholder {
+     font-style: italic;
+     border: 2px solid rgb(0, 0, 0);
+     cursor: pointing-hand;
+}
+
+QPushButton {
+    font-size: 16px;
+    padding: 10px 10px;
+    border-radius: 10px;        /* colțuri rotunjite */
+    border: 2px solid;          /* folosește culoarea implicită a sistemului */
+    background-color: transparent;  /* nu forțăm fundal */
+    min-width: 120px;            /* lățime minimă */
+    transition: all 0.2s ease;
+}
+
+QPushButton:hover {
+    border: 2px solid rgb(50, 128, 142);
+    border-width: 3px;
+    cursor: pointer;
+    transform: scale(1.05);
+    cursor: pointing-hand;
+}
+
+QPushButton:pressed {
+    background-color:  rgba(50, 128, 142, 0.507);
+    border-width: 3px;
+    transform: scale(0.95);
+}
+
+
+QLabel {
+    font-size: 16px;
+    font-weight: bold;
+    background-color: transparent;
+    padding: 4px;
+}
+#Tlabel {
+    font-size: 36px;
+    font-weight: bold;
+    background-color: transparent;
+    padding: 4px;
+}
+
+
+#showbtn {
+    font-size: 10px;              /* text mic */
+    padding: 2px 4px;             /* spațiu mic în interior */
+    border-radius: 5px;           /* colțuri ușor rotunjite */
+    border: 0px solid;
+    background-color: transparent;/* fundal transparent */
+    min-width: 20px;              /* lățime minimă mică */
+    min-height: 25px;             /* înălțime mică */
+    max-width: 25px;              /* să nu crească prea mult */
+    max-height: 30px;             /* să nu crească prea mult */
+    transition: all 0.2s ease;
+}
+
+
+#showbtn:hover {
+    cursor: pointing-hand;
+    transform: scale(1.05);
+    cursor: pointing-hand;
+}
+
+#showbtn:pressed {
+    background-color:  rgba(50, 128, 142, 0.507);
+    border-radius: 10px;
+    transform: scale(0.95);
+}

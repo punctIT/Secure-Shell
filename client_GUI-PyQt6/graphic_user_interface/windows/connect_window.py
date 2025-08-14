@@ -1,11 +1,9 @@
-from time import sleep
-
 from PyQt6.QtWidgets import (
     QWidget, QPushButton, QLabel, QLineEdit, QGridLayout, QFileDialog
 )
 import  threading
 import  time
-from graphic_user_interface.windows.login_window import LoginWindow
+
 class ConnectWindow(QWidget):
     def __init__(self,parent_window=None):
         super().__init__()
@@ -41,7 +39,7 @@ class ConnectWindow(QWidget):
     def try_connect(self):
         self.ip_edit.setStyleSheet(" border: 2px solid")
         self.btn_select.setStyleSheet(" border: 2px solid;")
-        self.cert_path_label.setStyleSheet(" border: 2px solid")
+        self.cert_path_label.setStyleSheet(" border: none")
         stop_animation=[None]
         def check_data():
             stop_animation[0]=self.parent_window.client.create_connection()==True

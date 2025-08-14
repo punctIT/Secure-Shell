@@ -1,6 +1,7 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout
 from graphic_user_interface.windows.connect_window import ConnectWindow
 from graphic_user_interface.windows.login_window import LoginWindow
+from graphic_user_interface.windows.secure_shell.secure_shell_window import SecureShellWindow
 from backend.client import TlsClient
 
 class Window(QWidget):
@@ -31,3 +32,6 @@ class Window(QWidget):
     def show_login_window(self):
         login_window = LoginWindow(self)
         self.clear_and_add_widget(login_window)
+    def show_secure_shell_window(self):
+        ssh_window= SecureShellWindow(self)
+        self.clear_and_add_widget(ssh_window)
