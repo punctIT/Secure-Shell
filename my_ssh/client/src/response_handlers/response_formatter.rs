@@ -28,8 +28,8 @@ use std::io::Write;
 /// | Code | Color | Usage |
 /// |------|-------|-------|
 /// | `^!` | Blue | Directories, special files |
-/// | `^#` | Green | Regular files |
-/// | `^@` | Red | Search matches, errors |
+/// | `^#` | Green | executabile files |
+/// | `^@` | Red | Search matches |
 /// | `~~` | Reset | End color formatting |
 /// 
 /// # Examples
