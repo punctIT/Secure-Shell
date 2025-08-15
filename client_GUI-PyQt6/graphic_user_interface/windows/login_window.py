@@ -8,6 +8,7 @@ class LoginWindow(QWidget):
     def __init__(self, parent_window=None):
         super().__init__()
         self.parent=parent_window
+        self.adjustSize()
         print(self.parent.client.receive4096())
         self.layout = QGridLayout()
         self.layout.setContentsMargins(50, 50, 50, 50)
