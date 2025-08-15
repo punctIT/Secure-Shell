@@ -3,20 +3,23 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtGui import QIcon
 from PyQt6.QtCore import Qt,QSize
-from file_area import get_files_area
+from  graphic_user_interface.windows.secure_shell.file_area import FileArea
 
-def secundary_menu(self)->QGridLayout:
-    layout = QGridLayout()
-    btn1=QPushButton("ana")
-    btn1.clicked.connect(lambda : print("working"))
-    layout.addWidget(btn1,0,0)
 
-    btn2 = QPushButton("are")
-    layout.addWidget(btn2, 1, 0)
-    btn2.clicked.connect(lambda: print("working"))
+class SecunaryMenu:
+    def __init__(self,ssh):
+        self.ssh=ssh
 
-    btn2 = QPushButton("mere")
-    layout.addWidget(btn2, 2, 0)
-    btn2.clicked.connect(lambda: print("working"))
+    def secundary_menu(self) -> QGridLayout:
+        layout = QGridLayout()
+        btn1 = QPushButton("ana")
 
-    return  layout
+        layout.addWidget(btn1, 0, 0)
+
+        btn2 = QPushButton("are")
+        layout.addWidget(btn2, 1, 0)
+
+        btn3 = QPushButton("mere")
+        layout.addWidget(btn3, 2, 0)
+
+        return layout

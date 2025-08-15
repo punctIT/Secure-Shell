@@ -17,3 +17,11 @@ QPushButton:pressed {
 
     transform: scale(0.95);
 }
+QScrollArea{
+    border: 2px solid rgb(50, 128, 142);
+
+}
+QGridLayout{
+    border: 2px solid rgb(50, 128, 142);
+    border-width: 3px;
+}
