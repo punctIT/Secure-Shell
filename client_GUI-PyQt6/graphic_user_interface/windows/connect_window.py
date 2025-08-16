@@ -3,6 +3,8 @@ from PyQt6.QtWidgets import (
 )
 import  threading
 import  time
+from PyQt6.QtGui import QCursor
+from PyQt6.QtCore import Qt
 
 class ConnectWindow(QWidget):
     def __init__(self,parent_window=None):
@@ -21,6 +23,7 @@ class ConnectWindow(QWidget):
 
         self.btn_select = QPushButton("Choose cert")
         self.btn_select.setObjectName("normal")
+        self.btn_select.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.layout.addWidget(self.btn_select, 1, 0)
         self.btn_select.clicked.connect(self.select_file)
 
@@ -28,6 +31,7 @@ class ConnectWindow(QWidget):
         self.layout.addWidget(self.cert_path_label, 1, 1)
 
         self.connect_btn= QPushButton("Connect")
+        self.connect_btn.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.layout.addWidget(self.connect_btn, 2, 1)
         self.connect_btn.clicked.connect(self.try_connect)
 
