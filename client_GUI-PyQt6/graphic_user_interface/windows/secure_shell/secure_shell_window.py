@@ -11,6 +11,7 @@ class SecureShellWindow(QWidget):
     def __init__(self, parent_window=None):
         super().__init__()
         self.adjustSize()
+
         self.parent=parent_window
         self.file_area=FileArea(self)
         self.primary_menu=PrimaryMenu(self)
@@ -34,6 +35,8 @@ class SecureShellWindow(QWidget):
 
         self.primary_layout.addLayout(self.secundary_menu.secundary_menu(),0,0)
         self.primary_layout.addWidget(self.file_area.get_files_area(),0,1)
+        self.primary_layout.setColumnStretch(0, 10)
+        self.primary_layout.setColumnStretch(1, 90)
         self.layout.addLayout(self.primary_layout,1,0)
 
         with open("graphic_user_interface/styles/ssh_window.css") as file:
@@ -42,20 +45,7 @@ class SecureShellWindow(QWidget):
         self.parent.client.sent("ls")
         text=self.parent.client.receive().strip()
         output=text.split("[-]")
-        #print(output)
+
         self.current_path=output[1]
         self.files=output[0]
-        #print(self.current_path)
 
-
-
-
-
-
-if __name__=="__main__":
-    import sys
-    from PyQt6.QtWidgets import QApplication
-    app = QApplication(sys.argv)
-    window = SecureShellWindow()
-    window.show()
-    sys.exit(app.exec())

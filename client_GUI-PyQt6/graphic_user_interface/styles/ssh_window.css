@@ -17,11 +17,47 @@ QPushButton:pressed {
 
     transform: scale(0.95);
 }
-QScrollArea{
-    border: 2px solid rgb(50, 128, 142);
-
+/* scroll */
+QScrollArea {
+     border: 2px solid rgb(50, 128, 142);
+    background: transparent;
 }
+QScrollBar:vertical, QScrollBar:horizontal {
+    background: transparent;
+}
+
 QGridLayout{
     border: 2px solid rgb(50, 128, 142);
     border-width: 3px;
+}
+
+/* */
+#topmenubtn {
+        border: 1px solid ;
+        border-radius: 4px;
+        background: transparent;
+        padding: 4px 12px;
+        font: 10pt "Segoe UI";
+    }
+#topmenubtn:hover {
+    border: 2px solid rgb(50, 128, 142);
+    border-width: 3px;
+    border-radius: 10px;
+    cursor: pointer;
+    transform: scale(1.05);
+    cursor: pointing-hand;
+}
+#topmenubtn:pressed {
+    background-color:  rgba(50, 128, 142, 0.507);
+    border-width: 3px;
+
+    transform: scale(0.95);
+}
+
+/* */
+#CurrentPath {
+    border: 2px solid;
+    background: transparent;
+    border-radius: 5px;
+    background: transparent;
 }

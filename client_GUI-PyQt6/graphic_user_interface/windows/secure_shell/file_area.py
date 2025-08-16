@@ -1,12 +1,14 @@
 from PyQt6.QtWidgets import (
     QWidget, QPushButton, QLabel, QLineEdit, QGridLayout,QScrollArea, QFileDialog, QMenu
 )
+from graphic_user_interface.windows.secure_shell.content_menu import Content
 from PyQt6.QtGui import QIcon,QCursor
 from PyQt6.QtCore import Qt,QSize
 
 class FileArea:
     def __init__(self,ssh):
         self.ssh=ssh
+        self.content = Content(ssh)
     def update_file_area(self):
         item = self.ssh.primary_layout.itemAtPosition(0, 1)
         if item:
@@ -19,12 +21,12 @@ class FileArea:
         self.ssh.primary_layout.addWidget(new_area, 0, 1)
 
     def folder_function(self, folder_name):
-        command = "cd " + folder_name
+        command = "cd " + f"\"{folder_name}\""
         self.ssh.parent.client.sent(command)
-        self.ssh.parent.client.receive()
+        print(self.ssh.parent.client.receive())
         self.ssh.update_path()
         self.update_file_area()
-        #self.ssh.primary_layout.update_path_label()
+        self.ssh.primary_menu.update_path_label()
 
     def get_files_area(self) -> QScrollArea:
         scroll_area = QScrollArea()
@@ -81,7 +83,8 @@ class FileArea:
                     i = i[2:]
                     btn.setIcon(QIcon("graphic_user_interface/Assets/Icons/exe.png"))
                 btn.setIconSize(QSize(64, 64))
-                btn.clicked.connect(lambda _, val=i: print(val))
+                btn.clicked.connect(lambda _, val=i: self.content.toggle_content_menu(val))
+                btn.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
                 file.addWidget(btn, 0, 0)
 
                 name = QLabel(i)

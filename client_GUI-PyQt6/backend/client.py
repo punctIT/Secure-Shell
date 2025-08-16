@@ -26,6 +26,17 @@ class TlsClient:
             print(f"[connection error] {e}")
             return False
         return True
+    def log_off(self):
+        self.ssock.close()
+        self.create_connection()
+    def terminate_connection(self):
+        self.ssock.close()
+        self.ssock = None
+        self.port = None
+        self.ip = None
+        self.hostname = "localhost"
+        self.server_cert_path = None
+
     def sent(self,message):
         self.ssock.sendall(message.encode("utf-8"))
     def receive4096(self)->str:
