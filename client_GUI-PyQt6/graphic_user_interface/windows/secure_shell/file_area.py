@@ -1,8 +1,8 @@
 from PyQt6.QtWidgets import (
-    QWidget, QPushButton, QLabel, QLineEdit, QGridLayout,QScrollArea, QFileDialog, QMenu
+    QWidget,  QLabel, QGridLayout,QScrollArea, QFileDialog, QMenu,  QLineEdit, QWidgetAction, QPushButton
 )
 from graphic_user_interface.windows.secure_shell.content_menu import Content
-from PyQt6.QtGui import QIcon,QCursor
+from PyQt6.QtGui import QIcon,QCursor,QAction
 from PyQt6.QtCore import Qt,QSize
 
 class FileArea:
@@ -57,7 +57,7 @@ class FileArea:
                 btn.setIconSize(QSize(64, 64))
                 btn.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
                 btn.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-                btn.customContextMenuRequested.connect(lambda pos, b=btn: self.show_context_menu(pos, b))
+                btn.customContextMenuRequested.connect(lambda pos, b=btn,val=i: self.show_context_menu_dir(pos, b,val))
                 file.addWidget(btn, 0, 0)
 
                 name = QLabel(i)
@@ -84,6 +84,8 @@ class FileArea:
                     btn.setIcon(QIcon("graphic_user_interface/Assets/Icons/exe.png"))
                 btn.setIconSize(QSize(64, 64))
                 btn.clicked.connect(lambda _, val=i: self.content.toggle_content_menu(val))
+                btn.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+                btn.customContextMenuRequested.connect(lambda pos, b=btn, val=i: self.show_context_menu_file(pos, b, val))
                 btn.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
                 file.addWidget(btn, 0, 0)
 
@@ -97,15 +99,48 @@ class FileArea:
                 if col == 0:
                     row += 1
         return scroll_area
-
-    def show_context_menu(self, pos, btn):
+    def delete_dir(self,name):
+        self.ssh.parent.client.sent(f"rmdir \"{name}\"")
+        print(self.ssh.parent.client.receive())
+        self.ssh.update_path()
+        self.update_file_area()
+    def delete_file(self,name):
+        self.ssh.parent.client.sent(f"rm \"{name}\"")
+        print(self.ssh.parent.client.receive())
+        self.ssh.update_path()
+        self.update_file_area()
+    def rename_menu(self, pos, btn,name):
+        def rename(new_name):
+            self.ssh.parent.client.sent(f"mv \"{name}\" \"{new_name}\"")
+            print(self.ssh.parent.client.receive())
+            self.ssh.update_path()
+            self.update_file_area()
         menu = QMenu()
-        menu.addAction("Opțiunea 1", lambda: print("Opțiunea 1 selectată"))
-        menu.addAction("Opțiunea 2", lambda: print("Opțiunea 2 selectată"))
-        menu.addSeparator()
-        menu.addAction("Ieșire", self.ssh.close)
+        line_edit = QLineEdit()
+        line_edit.setText(name)
+        line_action = QWidgetAction(menu)
+        line_action.setDefaultWidget(line_edit)
+        menu.addAction(line_action)
 
-        # afișăm meniul la poziția cursorului
+        action_rename = QAction('Rename', menu)
+        action_rename.triggered.connect(lambda: rename(line_edit.text()))
+        menu.addAction(action_rename)
+        menu.exec(btn.mapToGlobal(pos))
+
+    def show_context_menu_dir(self, pos, btn,name):
+        menu = QMenu()
+        menu.addAction("Open", lambda val=name: self.folder_function(val))
+        menu.addSeparator()
+        menu.addAction("Rename", lambda val=name: self.rename_menu(pos,btn,val))
+        menu.addAction("Delete", lambda val=name: self.delete_dir(val))
+        menu.exec(btn.mapToGlobal(pos))
+
+    def show_context_menu_file(self, pos, btn,name):
+        menu = QMenu()
+        menu.addAction("Show content", lambda val=name: self.content.toggle_content_menu(val))
+        menu.addSeparator()
+        menu.addAction("Rename", lambda val=name: self.rename_menu(pos,btn,val))
+        menu.addAction("Delete", lambda val=name: self.delete_file(val))
         menu.exec(btn.mapToGlobal(pos))
 
 

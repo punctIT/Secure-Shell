@@ -5,7 +5,7 @@ from PyQt6.QtWidgets import (
 from graphic_user_interface.windows.secure_shell.file_area import FileArea
 from  graphic_user_interface.windows.secure_shell.left_menu import SecunaryMenu
 from  graphic_user_interface.windows.secure_shell.top_menu import PrimaryMenu
-
+from  graphic_user_interface.windows.secure_shell.console import Console
 
 class SecureShellWindow(QWidget):
     def __init__(self, parent_window=None):
@@ -16,6 +16,7 @@ class SecureShellWindow(QWidget):
         self.file_area=FileArea(self)
         self.primary_menu=PrimaryMenu(self)
         self.secundary_menu=SecunaryMenu(self)
+        self.console=Console(self)
 
         self.current_path=None
         self.files=None
@@ -45,7 +46,6 @@ class SecureShellWindow(QWidget):
         self.parent.client.sent("ls")
         text=self.parent.client.receive().strip()
         output=text.split("[-]")
-
         self.current_path=output[1]
         self.files=output[0]
 

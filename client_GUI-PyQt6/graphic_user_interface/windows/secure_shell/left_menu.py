@@ -4,7 +4,7 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtGui import QIcon
 from PyQt6.QtCore import Qt,QSize
 from  graphic_user_interface.windows.secure_shell.file_area import FileArea
-from  graphic_user_interface.windows.secure_shell.console import console_menu
+
 
 class SecunaryMenu:
     def __init__(self,ssh):
@@ -12,23 +12,27 @@ class SecunaryMenu:
 
     def secundary_menu(self) -> QGridLayout:
         layout = QGridLayout()
-        btn1 = QPushButton("ana")
-
+        btn1 = QPushButton("Home")
+        btn1.clicked.connect(lambda :self.home_btn())
+        btn1.setObjectName("leftmenubtn")
         layout.addWidget(btn1, 0, 0)
 
-        btn2 = QPushButton("are")
-        layout.addWidget(btn2, 1, 0)
+
 
         console_btn = QPushButton("Console")
         console_btn.clicked.connect(self.toggle_console)
-
+        console_btn.setObjectName("leftmenubtn")
         layout.addWidget(console_btn, 2, 0, alignment=Qt.AlignmentFlag.AlignBottom)
 
         return layout
+    def home_btn(self):
+        self.ssh.parent.client.sent("cd")
+        self.ssh.parent.client.receive()
+        self.ssh.primary_menu.refresh_function()
     def toggle_console(self):
         if self.ssh.console_status:
             if not self.ssh.console_widget:
-                self.ssh.console_widget = console_menu(self.ssh)
+                self.ssh.console_widget = self.ssh.console.console_menu()
                 self.ssh.layout.addWidget(self.ssh.console_widget, 2, 0)
                 self.ssh.layout.setRowStretch(1, 70)
                 self.ssh.layout.setRowStretch(2, 25)

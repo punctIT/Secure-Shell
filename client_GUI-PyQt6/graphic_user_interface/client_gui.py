@@ -1,3 +1,4 @@
+from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QWidget, QVBoxLayout
 from graphic_user_interface.windows.connect_window import ConnectWindow
 from graphic_user_interface.windows.login_window import LoginWindow
@@ -9,6 +10,7 @@ class Window(QWidget):
     def __init__(self):
         super().__init__()
         self.client=TlsClient()
+        self.setWindowIcon(QIcon("graphic_user_interface/Assets/Icons/secure.png"))
         self.setAutoFillBackground(True)
         self.setWindowTitle("Secure Shell")
         self.main_layout = QVBoxLayout()

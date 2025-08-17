@@ -1,5 +1,6 @@
 from PyQt6.QtWidgets import (
-    QWidget, QPushButton, QLabel, QLineEdit, QGridLayout,QScrollArea, QFileDialog, QMenu
+    QWidget, QPushButton, QLabel, QLineEdit, QGridLayout,QScrollArea, QFileDialog, QMenu,QApplication, QMessageBox,
+QVBoxLayout
 )
 
 
@@ -62,12 +63,38 @@ class PrimaryMenu:
 
     def show_context_menu(self, button):
         menu = QMenu()
-        menu.addAction("Active Users", lambda: print("Opțiunea 1 selectată"))
+        menu.addAction("Active Users",self.show_active_users )
         menu.addAction("Log Out", self.log_off)
         menu.addAction("Exit Server",self.exit_server)
         menu.addSeparator()
         menu.exec(button.mapToGlobal(button.rect().bottomLeft()))
 
+    def show_active_users(self):
+        from datetime import datetime
+        current_time = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+
+        msg_box = QMessageBox()
+        msg_box.setWindowTitle("Active Users")
+
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setMinimumHeight(200)
+        scroll_area.setMinimumWidth(250)
+        container = QWidget()
+        container_layout = QVBoxLayout(container)
+        self.ssh.parent.client.sent("who")
+        active_users = self.ssh.parent.client.receive().split("[-]")[0][4:].split("\n\n")
+        for user in active_users:
+            user_label = QLabel(user)
+            user_label.setStyleSheet("padding: 5px; border-bottom: 1px solid #ccc;")
+            container_layout.addWidget(user_label)
+
+        scroll_area.setWidget(container)
+        layout = msg_box.layout()
+        layout.addWidget(scroll_area, 1, 0, 1, layout.columnCount())
+
+        msg_box.setStandardButtons(QMessageBox.StandardButton.Ok)
+        msg_box.exec()
     def log_off(self):
         self.ssh.parent.client.log_off()
         self.ssh.parent.show_login_window()
