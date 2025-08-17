@@ -3,7 +3,7 @@ QPushButton {
 }
 
 QPushButton:hover {
-    border: 2px solid rgb(50, 128, 142);
+    border: 2px solid;
     border-width: 3px;
     border-radius: 10px;
     cursor: pointer;
@@ -19,7 +19,7 @@ QPushButton:pressed {
 }
 /* scroll */
 QScrollArea {
-     border: 2px solid rgb(50, 128, 142);
+    border: 1px solid;
     background: transparent;
 }
 QScrollBar:vertical, QScrollBar:horizontal {
@@ -53,11 +53,43 @@ QGridLayout{
 
     transform: scale(0.95);
 }
+/*left side*/
+#leftmenubtn {
+        border: 1px solid ;
+        background: transparent;
+        padding: 4px 12px;
+        font: 10pt "Segoe UI";
+    }
+#leftmenubtn:hover {
+    border: 2px solid rgb(6, 124, 75);
+    border-width: 3px;
+    cursor: pointer;
+    transform: scale(1.05);
+    cursor: pointing-hand;
+}
+#leftmenubtn:pressed {
+    background-color:  rgba(50, 128, 142, 0.507);
+    border-width: 3px;
 
+    transform: scale(0.95);
+}
 /* */
 #CurrentPath {
     border: 2px solid;
-    background: transparent;
+
     border-radius: 5px;
     background: transparent;
+}
+
+
+QTextEdit {
+    border: 1px solid #3a3a3a;
+    border-radius: 6px;
+    padding: 8px;
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 13px;
+}
+
+QTextEdit:focus {
+    border: 1px solid #176e60;
 }

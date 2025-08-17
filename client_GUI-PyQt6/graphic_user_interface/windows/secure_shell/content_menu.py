@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import (
-    QWidget, QPushButton, QLabel, QLineEdit, QGridLayout,QScrollArea, QFileDialog, QMenu,QSizePolicy
+    QWidget, QPushButton, QGridLayout,QScrollArea,QSizePolicy,QTextEdit
 )
 from PyQt6.QtGui import QIcon,QCursor
 from PyQt6.QtCore import Qt,QSize
@@ -26,8 +26,8 @@ class Content:
         content = self.ssh.parent.client.receive().split("[-]")[0][4:]
         if len(content.strip())==0:
             content="No data could be read from the file. It may be empty or access is restricted."
-        content_lbn = QLabel(content)
-        content_lbn.setWordWrap(True)
+        content_lbn = QTextEdit()
+        content_lbn.append(content)
         content_lbn.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
         scroll_grid.addWidget(content_lbn, 0, 0)
 
