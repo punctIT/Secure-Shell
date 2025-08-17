@@ -184,7 +184,7 @@ Comprehensive guide for the Rust server implementation
 ### 🖥️ [Command Line Client Documentation](./my_ssh/client/README.MD)
 Details for the Rust terminal client
 
-### 🎨 [GUI Client Documentation](./client_GUI-PyQt6/README.md)
+### 🎨 [GUI Client Documentation](./client_GUI-PyQt6/README.MD)
 Complete guide for the PyQt6 graphical interface
 
 ## 🎓 Educational Goals
@@ -233,3 +233,4 @@ This project serves as a comprehensive learning resource for:
 **Author**: punctIT  
 **Version**: 1.0.0  
 **Last Updated**: August 17, 2025
+
